@@ -5,6 +5,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import sys
 import os
+from Canvas import Canvas
 
 iconPath = './Icons'
 imageTypes = ['.bmp', '.png', '.jpeg']
@@ -13,18 +14,33 @@ class MainWindow(QMainWindow):
 	def __init__(self):
 		super(MainWindow, self).__init__()
 		self.initUI()
+		self.canvas = None
 
 	def initUI(self):
 		self.setUpWindow(0.8)
 		self.setUpMenu()
 		self.setStatusBar()
+		self.setCanvas()
 		self.show()
 
 	def setUpWindow(self, ratio=0.8):
 		ScreenRect = QDesktopWidget().availableGeometry()
 		[x, y, w, h] = [ScreenRect.x(), ScreenRect.y(), ScreenRect.width(), ScreenRect.height()]
 		self.setGeometry((1-ratio)*w/2+x, (1-ratio)*h/2+y, ratio*w, ratio*h)
-		self.setWindowTitle("Yudong Zhang's Lab")
+		self.setWindowTitle("Yudong Zhang's Mini CG System")
+
+	def setCanvas(self):
+		self.canvas = Canvas()
+		self.canvas.setPixmap(QPixmap(os.path.join('.', 'test.bmp')))
+		vbox = QVBoxLayout()
+		vbox.addWidget(self.canvas)
+		canvasContainer = QWidget(self)
+		canvasContainer.setLayout(vbox)
+		self.setCentralWidget(canvasContainer)
+
+	def refreshCanvas(self):
+		pass
+
 
 
 	def setUpMenu(self):
