@@ -6,22 +6,25 @@ from PyQt5.QtCore import *
 
 class Element(QLabel):
 	ElementsTypes = ['Line', 'Polygon', 'Ellipse', 'Curve']
-	def __init__(self, canvas, pType, pColor, pId=None):
+	def __init__(self, canvas, pType, pColor, pId=None, *args, **kwargs):
 		if pType not in self.ElementsTypes:
 			raise RuntimeError('Invalid element type: {}'.format(pType))
 		self.type = pType
 		self.color = pColor
 		self.id = pId
+		self.args = args
+		self.kwargs = kwargs
 		self.path = None
 		self.canvas = canvas
 		self.hasObject = False
 		self.object = None
 		self.createObj()
+		print("Create new {0} with id={1}".format(self.type, self.id))
 	
 	def createObj(self):
 		if not self.hasObject:
 			if self.type=='Line':
-				self.object = Line()
+				self.object = Line(self.kwargs['p1'], self.kwargs['p2'])
 			elif self.type=='Polygon':
 				self.object = Polygon()
 			elif self.type=='Ellipse':
@@ -46,19 +49,20 @@ class Element(QLabel):
 # Line
 class Line(QLabel):
 	### BUG!!!!
-	def __init__(self, p1=None, p2=None):
+	def __init__(self, p1=QPoint(100, 100), p2=QPoint(200, 200)):
 		super(Line, self).__init__()
 		self.p1 = p1
 		self.p2 = p2
 		# self.
 
 	def draw(self, qp, algorithm='DDA'):
+		# TODO: self-implement algorithms
 		qp.drawPath(self.getPath())
 
 	def getPath(self):
 		self.path = QPainterPath()
-		self.path.moveTo(100, 100)
-		self.path.lineTo(200, 200)
+		self.path.moveTo(self.p1)
+		self.path.lineTo(self.p2)
 		return self.path
 
 
@@ -131,10 +135,10 @@ class Canvas(QLabel):
 		self.setAlignment(Qt.AlignCenter)
 		self.hasCanvas = True
 
-	def createElement(self, pType, pColor, pId=None):
+	def createElement(self, pType, pColor, pId=None, *args, **kwargs):
 		# check Id
 		self.checkIdValid(pId)
-		self.allElements[self.curId] = Element(self, pType=pType, pColor=pColor, pId=self.curId)
+		self.allElements[self.curId] = Element(self, pType=pType, pColor=pColor, pId=self.curId, *args, **kwargs)
 
 	@property
 	def curElement(self):
@@ -168,8 +172,8 @@ class Canvas(QLabel):
 	def getHeight(self):
 		return self.h
 	
-	def newLine(self, pColor, pId=None):
-		self.createElement(pType='Line', pColor=pColor, pId=pId)
+	def newLine(self, pColor, pId=None, *args, **kwargs):
+		self.createElement(pType='Line', pColor=pColor, pId=pId, *args, **kwargs)
 
 	def newPolygon(self, pColor, pId=None):
 		self.createElement(pType='Polygon', pColor=pColor, pId=pId)

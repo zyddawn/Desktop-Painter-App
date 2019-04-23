@@ -11,15 +11,16 @@ import random
 iconPath = './Icons'
 imageTypes = ['.bmp', '.png', '.jpeg']
 
-class popUpWindowGetCanvasSize(QDialog):
+# PUW refer to pop-up-window
+class PUWGetCanvasSize(QDialog):
 	def __init__(self, tmpDict, parent=None):
-		super(popUpWindowGetCanvasSize, self).__init__(parent)
+		super(PUWGetCanvasSize, self).__init__(parent)
 		self.tmpDict = tmpDict
 		self.initUI()
 
 	def initUI(self):
 		self.setFixedSize(200, 150)
-		self.setWindowTitle("Line settings")
+		self.setWindowTitle("Canvas settings")
 		width = QLabel("Width")
 		height = QLabel("Height")
 		self.widthEdit = QLineEdit()
@@ -49,6 +50,65 @@ class popUpWindowGetCanvasSize(QDialog):
 
 	def clickOK(self):
 		self.tmpDict['w'], self.tmpDict['h'] = int(self.widthEdit.text()), int(self.heightEdit.text())
+		self.close()
+		
+	def clickCancel(self):
+		self.close()
+
+
+class PUWGetLinePoints(QDialog):
+	def __init__(self, pArr, parent=None):
+		super(PUWGetLinePoints, self).__init__(parent)
+		self.pArr = pArr
+		self.initUI()
+
+	def initUI(self):
+		self.setFixedSize(300, 200)
+		self.setWindowTitle("Line settings")
+		x1 = QLabel("x1")
+		y1 = QLabel("y1")
+		x2 = QLabel("x2")
+		y2 = QLabel("y2")
+		self.x1Edit = QLineEdit()
+		self.y1Edit = QLineEdit()
+		self.x2Edit = QLineEdit()
+		self.y2Edit = QLineEdit()
+		self.x1Edit.setFixedWidth(60)
+		self.y1Edit.setFixedWidth(60)
+		self.x2Edit.setFixedWidth(60)
+		self.y2Edit.setFixedWidth(60)
+		self.x1Edit.setText('10')
+		self.y1Edit.setText('10')
+		self.x2Edit.setText('20')
+		self.y2Edit.setText('20')
+		OkBtn = QPushButton("OK")
+		OkBtn.clicked.connect(self.clickOK)
+		OkBtn.setShortcut("Enter")
+		OkBtn.setAutoDefault(True)
+		CancelBtn = QPushButton("Cancel")
+		CancelBtn.clicked.connect(self.clickCancel)
+		CancelBtn.setAutoDefault(False)
+		
+		grid = QGridLayout()
+		grid.addWidget(x1, 1, 0)
+		grid.addWidget(self.x1Edit, 1, 1)
+		grid.addWidget(y1, 1, 2)
+		grid.addWidget(self.y1Edit, 1, 3)
+		grid.addWidget(x2, 2, 0)
+		grid.addWidget(self.x2Edit, 2, 1)
+		grid.addWidget(y2, 2, 2)
+		grid.addWidget(self.y2Edit, 2, 3)
+		grid.addWidget(QLabel(""), 3, 0)
+		grid.addWidget(CancelBtn, 3, 1)
+		grid.addWidget(OkBtn, 3, 2)
+		grid.addWidget(QLabel(""), 3, 3)
+		
+		self.setLayout(grid)
+		self.exec()
+
+	def clickOK(self):
+		self.pArr.append(QPoint(int(self.x1Edit.text()), int(self.y1Edit.text())))
+		self.pArr.append(QPoint(int(self.x2Edit.text()), int(self.y2Edit.text())))
 		self.close()
 		
 	def clickCancel(self):
@@ -159,18 +219,22 @@ class MainWindow(QMainWindow):
 		# new line
 		newLineAct = QAction(QIcon(os.path.join(iconPath, 'icons8-line-64.png')), 'Create new line', self)
 		newLineAct.setStatusTip('Create new line')
+		newLineAct.setShortcut('Shift+Ctrl+L')
 		newLineAct.triggered.connect(self.newLine)
 		# new polygon
 		newPolygonAct = QAction(QIcon(os.path.join(iconPath, 'icons8-polygon-64.png')), 'Create new polygon', self)
 		newPolygonAct.setStatusTip('Create new polygon')
+		newPolygonAct.setShortcut('Shift+Ctrl+P')
 		newPolygonAct.triggered.connect(self.newPolygon)
 		# new ellipse
 		newEllipseAct = QAction(QIcon(os.path.join(iconPath, 'icons8-sphere-64.png')), 'Create new ellipse', self)
 		newEllipseAct.setStatusTip('Create new ellipse')
+		newEllipseAct.setShortcut('Shift+Ctrl+E')
 		newEllipseAct.triggered.connect(self.newEllipse)
 		# new curve
 		newCurveAct = QAction(QIcon(os.path.join(iconPath, 'icons8-graph-report-64.png')), 'Create new curve', self)
 		newCurveAct.setStatusTip('Create new curve')
+		newCurveAct.setShortcut('Shift+Ctrl+C')
 		newCurveAct.triggered.connect(self.newCurve)
 
 		self.toolbar.addAction(newLineAct)
@@ -193,7 +257,7 @@ class MainWindow(QMainWindow):
 
 	def resetCanvasSize(self, w=None, h=None):
 		if not (isinstance(w,int) and isinstance(h,int) and 100<=w<=1000 and 100<=h<=1000):
-			print("Invalid canvas size! Will set default size.")
+			print("Set default canvas size.")
 			w = self.canvas.width()-self.canvasOffset*2
 			h = self.canvas.height()-self.canvasOffset*2
 		self.canvas.setCanvasSize(w, h)
@@ -204,7 +268,7 @@ class MainWindow(QMainWindow):
 			print("save canvas query not implemented yet")
 
 		tmpDict = {"w": -1, "h": -1}
-		win = popUpWindowGetCanvasSize(tmpDict, self)
+		win = PUWGetCanvasSize(tmpDict, self)
 		self.resetCanvasSize(tmpDict['w'], tmpDict['h'])
 		self.canvas.newCanvas()
 
@@ -253,15 +317,19 @@ class MainWindow(QMainWindow):
 		if color.isValid():
 			self.curColor = color
 
-	
+
+	# Some bug when resizing canvas
 	def toCanvasCoord(self, x, y):
 		cx = x - self.canvasOffset - self.canvasPos.x()
 		cy = y - self.canvasOffset - self.canvasPos.y()
 		return cx, cy
 
+	# Some bug when resizing canvas
 	def pointInRange(self, x, y):
 		return 0<=x<=self.canvas.getWidth and 0<=y<=self.canvas.getHeight
 
+
+	# Some bug when resizing canvas
 	def mousePressEvent(self, e):
 		x, y = self.toCanvasCoord(e.x(), e.y())
 		if self.pointInRange(x, y):
@@ -273,7 +341,10 @@ class MainWindow(QMainWindow):
 
 	def newLine(self):
 		if self.canvas.hasCanvas:
-			self.canvas.newLine(self.curColor)
+			pArr = []
+			pWin = PUWGetLinePoints(pArr, self)
+			if pArr:
+				self.canvas.newLine(self.curColor, p1=pArr[0], p2=pArr[1])
 		else:
 			self.popUpMsg("Should create a canvas before drawing a line.")
 	
