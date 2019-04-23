@@ -28,7 +28,7 @@ class Element(QLabel):
 			elif self.type=='Polygon':
 				self.object = Polygon()
 			elif self.type=='Ellipse':
-				self.object = Ellipse()
+				self.object = Ellipse(self.kwargs['rCenter'], self.kwargs['rx'], self.kwargs['ry'])
 			elif self.type=='Curve':
 				self.object = Curve()
 			else:
@@ -70,9 +70,11 @@ class Line(QLabel):
 class Polygon(QLabel):
 	def __init__(self):
 		super(Polygon, self).__init__()
+		
 
 	def draw(self, qp):
 		# TODO
+		# qp.drawEllipse(rCenter, rx, ry)
 		pass
 
 	def getPath(self):
@@ -83,18 +85,21 @@ class Polygon(QLabel):
 
 # Ellipse
 class Ellipse(QLabel):
-	def __init__(self):
+	def __init__(self, rCenter=QPoint(100, 100), rx=50, ry=50):
 		super(Ellipse, self).__init__()
+		self.rCenter = rCenter
+		self.rx = rx
+		self.ry = ry
 
 	def draw(self, qp):
 		# TODO
-		pass
+		qp.drawEllipse(self.rCenter, self.rx, self.ry)
 
-	def getPath(self):
-		self.path = QPainterPath()
-		self.path.moveTo(100, 100)
-		self.path.lineTo(200, 200)
-		return self.path
+	# def getPath(self):
+	# 	self.path = QPainterPath()
+	# 	self.path.moveTo(100, 100)
+	# 	self.path.lineTo(200, 200)
+	# 	return self.path
 
 # Curve
 class Curve(QLabel):
@@ -178,8 +183,8 @@ class Canvas(QLabel):
 	def newPolygon(self, pColor, pId=None):
 		self.createElement(pType='Polygon', pColor=pColor, pId=pId)
 
-	def newEllipse(self, pColor, pId=None):
-		self.createElement(pType='Ellipse', pColor=pColor, pId=pId)
+	def newEllipse(self, pColor, pId=None, *args, **kwargs):
+		self.createElement(pType='Ellipse', pColor=pColor, pId=pId, *args, **kwargs)
 
 	def newCurve(self, pColor, pId=None):
 		self.createElement(pType='Curve', pColor=pColor, pId=pId)

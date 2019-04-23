@@ -56,9 +56,9 @@ class PUWGetCanvasSize(QDialog):
 		self.close()
 
 
-class PUWGetLinePoints(QDialog):
+class PUWGetLineSettings(QDialog):
 	def __init__(self, pArr, parent=None):
-		super(PUWGetLinePoints, self).__init__(parent)
+		super(PUWGetLineSettings, self).__init__(parent)
 		self.pArr = pArr
 		self.initUI()
 
@@ -113,6 +113,68 @@ class PUWGetLinePoints(QDialog):
 		
 	def clickCancel(self):
 		self.close()
+
+
+class PUWGetEllipseSettings(QDialog):
+	def __init__(self, rCenter, rArr, parent=None):
+		super(PUWGetEllipseSettings, self).__init__(parent)
+		self.rCenter = rCenter
+		self.rArr = rArr
+		self.initUI()
+
+	def initUI(self):
+		self.setFixedSize(300, 200)
+		self.setWindowTitle("Line settings")
+		x = QLabel("x")
+		y = QLabel("y")
+		rx = QLabel("rx")
+		ry = QLabel("ry")
+		self.xEdit = QLineEdit()
+		self.yEdit = QLineEdit()
+		self.rxEdit = QLineEdit()
+		self.ryEdit = QLineEdit()
+		self.xEdit.setFixedWidth(60)
+		self.yEdit.setFixedWidth(60)
+		self.rxEdit.setFixedWidth(60)
+		self.ryEdit.setFixedWidth(60)
+		self.xEdit.setText('200')
+		self.yEdit.setText('200')
+		self.rxEdit.setText('60')
+		self.ryEdit.setText('60')
+		OkBtn = QPushButton("OK")
+		OkBtn.clicked.connect(self.clickOK)
+		OkBtn.setShortcut("Enter")
+		OkBtn.setAutoDefault(True)
+		CancelBtn = QPushButton("Cancel")
+		CancelBtn.clicked.connect(self.clickCancel)
+		CancelBtn.setAutoDefault(False)
+		
+		grid = QGridLayout()
+		grid.addWidget(x, 1, 0)
+		grid.addWidget(self.xEdit, 1, 1)
+		grid.addWidget(y, 1, 2)
+		grid.addWidget(self.yEdit, 1, 3)
+		grid.addWidget(rx, 2, 0)
+		grid.addWidget(self.rxEdit, 2, 1)
+		grid.addWidget(ry, 2, 2)
+		grid.addWidget(self.ryEdit, 2, 3)
+		grid.addWidget(QLabel(""), 3, 0)
+		grid.addWidget(CancelBtn, 3, 1)
+		grid.addWidget(OkBtn, 3, 2)
+		grid.addWidget(QLabel(""), 3, 3)
+		
+		self.setLayout(grid)
+		self.exec()
+
+	def clickOK(self):
+		self.rCenter.append(QPoint(int(self.xEdit.text()), int(self.yEdit.text())))
+		self.rArr.append(int(self.rxEdit.text()))
+		self.rArr.append(int(self.ryEdit.text()))
+		self.close()
+		
+	def clickCancel(self):
+		self.close()
+
 
 
 class MainWindow(QMainWindow):
@@ -341,8 +403,10 @@ class MainWindow(QMainWindow):
 
 	def newLine(self):
 		if self.canvas.hasCanvas:
+			# TODO: implement algorithm choice
+			# TODO: judge if point valid
 			pArr = []
-			pWin = PUWGetLinePoints(pArr, self)
+			pWin = PUWGetLineSettings(pArr, self)
 			if pArr:
 				self.canvas.newLine(self.curColor, p1=pArr[0], p2=pArr[1])
 		else:
@@ -350,18 +414,28 @@ class MainWindow(QMainWindow):
 	
 	def newPolygon(self):
 		if self.canvas.hasCanvas:
+			# TODO: implement input points
+			# TODO: judge if point valid
 			self.canvas.newPolygon(self.curColor)
 		else:
 			self.popUpMsg("Should create a canvas before drawing a polygon.")
 
 	def newEllipse(self):
 		if self.canvas.hasCanvas:
-			self.canvas.newEllipse(self.curColor)
+			# TODO: implement algorithm choice
+			# TODO: judge if point valid
+			rCenter = []
+			rArr = []
+			pWin = PUWGetEllipseSettings(rCenter, rArr, self)
+			if rArr:
+				self.canvas.newEllipse(self.curColor, rCenter=rCenter[0], rx=rArr[0], ry=rArr[1])
 		else:
 			self.popUpMsg("Should create a canvas before drawing a ellipse.")
 
 	def newCurve(self):
 		if self.canvas.hasCanvas:
+			# TODO: implement algorithm choice
+			# TODO: judge if point valid
 			self.canvas.newCurve(self.curColor)
 		else:
 			self.popUpMsg("Should create a canvas before drawing a curve.")
