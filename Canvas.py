@@ -4,90 +4,187 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-class Primitive(object):
-	primitiveTypes = ['Line', 'Polygon', 'Ellipse', 'Curve']
-	def __init__(self, pType='Line', pColor='#000000', pId=None):
-		# TODO: judge if the type, color … are valid
-		if pType not in primitiveTypes:
-			raise RuntimeError('Invalid primitive type: {}'.format(pType))
+class Element(QLabel):
+	ElementsTypes = ['Line', 'Polygon', 'Ellipse', 'Curve']
+	def __init__(self, canvas, pType, pColor, pId=None):
+		if pType not in self.ElementsTypes:
+			raise RuntimeError('Invalid element type: {}'.format(pType))
 		self.type = pType
 		self.color = pColor
 		self.id = pId
 		self.path = None
+		self.canvas = canvas
+		self.hasObject = False
+		self.object = None
+		self.createObj()
+	
+	def createObj(self):
+		if not self.hasObject:
+			if self.type=='Line':
+				self.object = Line()
+			elif self.type=='Polygon':
+				self.object = Polygon()
+			elif self.type=='Ellipse':
+				self.object = Ellipse()
+			elif self.type=='Curve':
+				self.object = Curve()
+			else:
+				raise RuntimeError('Invalid element type: {}'.format(self.type))
+			self.hasObject = True
+			self.paintEvent()
+		else:
+			raise RuntimeError("Already created an object within current element.")
 
-	def draw(self):
-		self.path = QPainterPath()
-		self.path.moveTo(30, 30)
+	def paintEvent(self):
+		qp = QPainter(self.canvas.pixmap())
+		qp.setPen(QPen(self.color))
+		qp.setBrush(QBrush(self.color))
+		self.object.draw(qp)
+		self.canvas.update()
 
 
 # Line
-class Line(Primitive):
-	def __init__(self, pColor='#000000', pId=None):
-		super(Line, self).__init__(pType='Line', pColor=pColor, pId=self.curId)
+class Line(QLabel):
+	### BUG!!!!
+	def __init__(self, p1=None, p2=None):
+		super(Line, self).__init__()
+		self.p1 = p1
+		self.p2 = p2
+		# self.
 
-	def draw(self):
-		super(Line, self).draw()
-		pass
+	def draw(self, qp, algorithm='DDA'):
+		qp.drawPath(self.getPath())
+
+	def getPath(self):
+		self.path = QPainterPath()
+		self.path.moveTo(100, 100)
+		self.path.lineTo(200, 200)
+		return self.path
+
 
 # Polygon
-class Polygon(Primitive):
-	def __init__(self, pColor='#000000', pId=None):
-		super(Polygon, self).__init__(pType='Polygon', pColor=pColor, pId=self.curId)
+class Polygon(QLabel):
+	def __init__(self):
+		super(Polygon, self).__init__()
 
-	def draw(self):
-		super(Polygon, self).draw()
+	def draw(self, qp):
+		# TODO
 		pass
+
+	def getPath(self):
+		self.path = QPainterPath()
+		self.path.moveTo(100, 100)
+		self.path.lineTo(200, 200)
+		return self.path
 
 # Ellipse
-class Ellipse(Primitive):
-	def __init__(self, pColor='#000000', pId=None):
-		super(Ellipse, self).__init__(pType='Ellipse', pColor=pColor, pId=self.curId)
+class Ellipse(QLabel):
+	def __init__(self):
+		super(Ellipse, self).__init__()
 
-	def draw(self):
-		super(Ellipse, self).draw()
+	def draw(self, qp):
+		# TODO
 		pass
+
+	def getPath(self):
+		self.path = QPainterPath()
+		self.path.moveTo(100, 100)
+		self.path.lineTo(200, 200)
+		return self.path
 
 # Curve
-class Curve(Primitive):
-	def __init__(self, pColor='#000000', pId=None):
-		super(Curve, self).__init__(pType='Curve', pColor=pColor, pId=self.curId)
+class Curve(QLabel):
+	def __init__(self):
+		super(Curve, self).__init__()
 
-	def draw(self):
-		super(Curve, self).draw()
+	def draw(self, qp):
+		# TODO
 		pass
+
+	def getPath(self):
+		self.path = QPainterPath()
+		self.path.moveTo(100, 100)
+		self.path.lineTo(200, 200)
+		return self.path
 
 
 class Canvas(QLabel):
 	def __init__(self):
 		super(Canvas, self).__init__()
-		self.curPrimitive = None	# 当前图元
 		self.nextId = 0
 		self.curId = -1
-		self.allPrimitives = {}
-		self.setUpCanvas()
+		self.allElements = {}
+		# self.curColor = '#FFFFFF'
+		self.w = 0
+		self.h = 0
+		self.hasCanvas = False
 
-	def setUpCanvas(self):
-		pass
+	def setCanvasSize(self, w, h):
+		self.w = w
+		self.h = h
+		
+	def newCanvas(self):
+		self.background_color = QColor(Qt.white)
+		emptyCanvas = QPixmap(self.w, self.h)
+		self.setPixmap(emptyCanvas)
+		self.pixmap().fill(self.background_color)
+		self.setAlignment(Qt.AlignCenter)
+		self.hasCanvas = True
 
-	def createPrimitive(self, pType, pColor, pId=None):
+	def createElement(self, pType, pColor, pId=None):
 		# check Id
 		self.checkIdValid(pId)
-		self.curPrimitive = Primitive(pType=pType, pColor=pColor, pId=self.curId)
-		self.allPrimitives[self.curId] = self.curPrimitive
-		pass
+		self.allElements[self.curId] = Element(self, pType=pType, pColor=pColor, pId=self.curId)
+
+	@property
+	def curElement(self):
+		return self.allElements[self.curId]
 
 	def checkIdValid(self, pId):
-		if pId==self.nextId:
-			self.curId, self.nextId = self.nextId, self.nextId+1
-		elif pId<self.nextId:
-			if pId<0 or pId not in self.allPrimitives.keys():
-				raise RuntimeError('Invalid primitive id: {}'.format(pId))
-			else:
-				self.curId = pId
-		elif pId>self.nextId:
-			self.curId, self.nextId = pId, pId+1
+		if isinstance(pId, int):
+			if pId==self.nextId:
+				self.curId, self.nextId = self.nextId, self.nextId+1
+			elif pId<self.nextId:
+				if pId<0 or pId not in self.allElements.keys():
+					raise RuntimeError('Invalid primitive id: {}'.format(pId))
+				else:
+					self.curId = pId
+			elif pId>self.nextId:
+				self.curId, self.nextId = pId, pId+1
 		else:
 			self.curId, self.nextId = self.nextId, self.nextId+1
+
+	def saveCanvas(self):
+		pass
+
+	def openCanvas(self):
+		pass
+
+	@property
+	def getWidth(self):
+		return self.w
+
+	@property
+	def getHeight(self):
+		return self.h
+	
+	def newLine(self, pColor, pId=None):
+		self.createElement(pType='Line', pColor=pColor, pId=pId)
+
+	def newPolygon(self, pColor, pId=None):
+		self.createElement(pType='Polygon', pColor=pColor, pId=pId)
+
+	def newEllipse(self, pColor, pId=None):
+		self.createElement(pType='Ellipse', pColor=pColor, pId=pId)
+
+	def newCurve(self, pColor, pId=None):
+		self.createElement(pType='Curve', pColor=pColor, pId=pId)
+
+
+
+
+
+
 
 
 

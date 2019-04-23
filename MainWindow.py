@@ -5,22 +5,70 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import sys
 import os
-from Canvas import Canvas
+from Canvas import *
+import random
 
 iconPath = './Icons'
 imageTypes = ['.bmp', '.png', '.jpeg']
+
+class popUpWindowGetCanvasSize(QDialog):
+	def __init__(self, tmpDict, parent=None):
+		super(popUpWindowGetCanvasSize, self).__init__(parent)
+		self.tmpDict = tmpDict
+		self.initUI()
+
+	def initUI(self):
+		self.setFixedSize(200, 150)
+		self.setWindowTitle("Line settings")
+		width = QLabel("Width")
+		height = QLabel("Height")
+		self.widthEdit = QLineEdit()
+		self.heightEdit = QLineEdit()
+		self.widthEdit.setFixedWidth(80)
+		self.heightEdit.setFixedWidth(80)
+		self.widthEdit.setText("0")
+		self.heightEdit.setText("0")
+		OkBtn = QPushButton("OK")
+		OkBtn.clicked.connect(self.clickOK)
+		OkBtn.setShortcut("Enter")
+		OkBtn.setAutoDefault(True)
+		CancelBtn = QPushButton("Cancel")
+		CancelBtn.clicked.connect(self.clickCancel)
+		CancelBtn.setAutoDefault(False)
+		
+		grid = QGridLayout()
+		grid.addWidget(width, 1, 0)
+		grid.addWidget(self.widthEdit, 1, 1)
+		grid.addWidget(height, 2, 0)
+		grid.addWidget(self.heightEdit, 2, 1)
+		grid.addWidget(CancelBtn, 3, 0)
+		grid.addWidget(OkBtn, 3, 1)
+		
+		self.setLayout(grid)
+		self.exec()
+
+	def clickOK(self):
+		self.tmpDict['w'], self.tmpDict['h'] = int(self.widthEdit.text()), int(self.heightEdit.text())
+		self.close()
+		
+	def clickCancel(self):
+		self.close()
+
 
 class MainWindow(QMainWindow):
 	def __init__(self):
 		super(MainWindow, self).__init__()
 		self.initUI()
-		self.canvas = None
+		self.canvasPos = self.centralWidget().pos()
+		self.canvasOffset = 10
+		self.curColor = QColor(0, 0, 0);
 
 	def initUI(self):
 		self.setUpWindow(0.8)
 		self.setUpMenu()
-		self.setStatusBar()
-		self.setCanvas()
+		self.setUpStatusBar()
+		self.setUpCanvas()
+		self.setUpToolBar()
 		self.show()
 
 	def setUpWindow(self, ratio=0.8):
@@ -28,20 +76,6 @@ class MainWindow(QMainWindow):
 		[x, y, w, h] = [ScreenRect.x(), ScreenRect.y(), ScreenRect.width(), ScreenRect.height()]
 		self.setGeometry((1-ratio)*w/2+x, (1-ratio)*h/2+y, ratio*w, ratio*h)
 		self.setWindowTitle("Yudong Zhang's Mini CG System")
-
-	def setCanvas(self):
-		self.canvas = Canvas()
-		self.canvas.setPixmap(QPixmap(os.path.join('.', 'test.bmp')))
-		vbox = QVBoxLayout()
-		vbox.addWidget(self.canvas)
-		canvasContainer = QWidget(self)
-		canvasContainer.setLayout(vbox)
-		self.setCentralWidget(canvasContainer)
-
-	def refreshCanvas(self):
-		pass
-
-
 
 	def setUpMenu(self):
 		menubar = self.menuBar()
@@ -64,12 +98,12 @@ class MainWindow(QMainWindow):
 		saveAct = QAction(QIcon(os.path.join(iconPath, 'icons8-save-64.png')), 'Save', self)
 		saveAct.setShortcut('Ctrl+S')
 		saveAct.setStatusTip('Save file')
-		# saveAct.triggered.connect(self.saveFile)
+		saveAct.triggered.connect(self.saveFile)
 		# Save as file
 		saveAsAct = QAction(QIcon(os.path.join(iconPath, 'icons8-save-as-64.png')), 'Save as...', self)
 		saveAsAct.setShortcut('Shift+Ctrl+S')
 		saveAsAct.setStatusTip('Save file as...')
-		# saveAsAct.triggered.connect(self.saveFileAs)
+		saveAsAct.triggered.connect(self.saveFileAs)
 		### Add to fileMenu
 		fileMenu.addAction(newAct)
 		fileMenu.addSeparator()
@@ -109,33 +143,77 @@ class MainWindow(QMainWindow):
 		statusBarAct.triggered.connect(self.toggleStatusBar)
 
 		##### set up tool bar
-		toolbar = self.addToolBar("Operations")
+		self.toolbar = self.addToolBar("Operations")
+		self.toolbar.addAction(newAct)
+		self.toolbar.addAction(openAct)
+		self.toolbar.addAction(saveAct)
+		self.toolbar.addAction(saveAsAct)
+		self.toolbar.addSeparator()
+		
+
+	def setUpToolBar(self):
 		# choose color 
-		colorAct = QAction(QIcon(os.path.join(iconPath, 'icons8-color-palette-64')), 'Select color', self)
+		colorAct = QAction(QIcon(os.path.join(iconPath, 'icons8-color-palette-64.png')), 'Select color', self)
 		colorAct.setStatusTip('Select color')
 		colorAct.triggered.connect(self.selectColor)
+		# new line
+		newLineAct = QAction(QIcon(os.path.join(iconPath, 'icons8-line-64.png')), 'Create new line', self)
+		newLineAct.setStatusTip('Create new line')
+		newLineAct.triggered.connect(self.newLine)
+		# new polygon
+		newPolygonAct = QAction(QIcon(os.path.join(iconPath, 'icons8-polygon-64.png')), 'Create new polygon', self)
+		newPolygonAct.setStatusTip('Create new polygon')
+		newPolygonAct.triggered.connect(self.newPolygon)
+		# new ellipse
+		newEllipseAct = QAction(QIcon(os.path.join(iconPath, 'icons8-sphere-64.png')), 'Create new ellipse', self)
+		newEllipseAct.setStatusTip('Create new ellipse')
+		newEllipseAct.triggered.connect(self.newEllipse)
+		# new curve
+		newCurveAct = QAction(QIcon(os.path.join(iconPath, 'icons8-graph-report-64.png')), 'Create new curve', self)
+		newCurveAct.setStatusTip('Create new curve')
+		newCurveAct.triggered.connect(self.newCurve)
 
-		# choose line width
-		## TODO
-
-		toolbar.addAction(newAct)
-		toolbar.addAction(openAct)
-		toolbar.addAction(saveAct)
-		toolbar.addAction(saveAsAct)
-		toolbar.addSeparator()
-		toolbar.addAction(colorAct)
+		self.toolbar.addAction(newLineAct)
+		self.toolbar.addAction(newPolygonAct)
+		self.toolbar.addAction(newEllipseAct)
+		self.toolbar.addAction(newCurveAct)
+		self.toolbar.addSeparator()
+		self.toolbar.addAction(colorAct)
 
 
-
-	def setStatusBar(self):
+	def setUpStatusBar(self):
 		self.statusbar = self.statusBar()
 		self.statusbar.showMessage('Ready')
+		# print("statusbar: {}".format(self.statusbar.size()))
 
+	def setUpCanvas(self):
+		self.canvas = Canvas()
+		self.setCentralWidget(self.canvas)
+		self.setMouseTracking(True)
 
-	def newCanvas(self):
-		# Ask if need to save old canvas
-		print("Function newCanvas has not been implemented yet.")
-		pass
+	def resetCanvasSize(self, w=None, h=None):
+		if not (isinstance(w,int) and isinstance(h,int) and 100<=w<=1000 and 100<=h<=1000):
+			print("Invalid canvas size! Will set default size.")
+			w = self.canvas.width()-self.canvasOffset*2
+			h = self.canvas.height()-self.canvasOffset*2
+		self.canvas.setCanvasSize(w, h)
+
+	def newCanvas(self, w=None, h=None):
+		# TODO: Ask if need to save old canvas
+		if self.canvas.hasCanvas:
+			print("save canvas query not implemented yet")
+
+		tmpDict = {"w": -1, "h": -1}
+		win = popUpWindowGetCanvasSize(tmpDict, self)
+		self.resetCanvasSize(tmpDict['w'], tmpDict['h'])
+		self.canvas.newCanvas()
+
+	def popUpMsg(self, text):
+		msg = QMessageBox()
+		pixmap = QPixmap(os.path.join(iconPath, 'icons8-cartoon-face-64.png'))
+		msg.setIconPixmap(pixmap)
+		msg.setText(text)
+		msg.exec_()
 
 
 	def openFile(self):
@@ -143,26 +221,18 @@ class MainWindow(QMainWindow):
 		if fname[0]:
 			if fname[0][-4:] not in imageTypes:
 				# pop up msg: can only open .bmp file
-				msg = QMessageBox()
-				pixmap = QPixmap(os.path.join(iconPath, 'icons8-cartoon-face-64.png'))
-										# .scaledToHeight(32, QtCore.Qt.SmoothTransformation)
-				msg.setIconPixmap(pixmap)
-				msg.setText("Can only open image-typed files.")
-				msg.exec_()
+				self.popUpMsg("Can only open image-typed files.")
 			else:
 				# TODO: show the file 
 				print("Open file functionality has not been implemented yet.")
-
 
 	def saveFile(self):
 		print("Function saveFile has not been implemented yet.")
 		pass
 
-
 	def saveFileAs(self):
 		print("Function saveFileAs has not been implemented yet.")
 		pass
-
 
 	def toggleToolBar(self, state):
 		if state:
@@ -170,22 +240,61 @@ class MainWindow(QMainWindow):
 		else:
 			self.toolbar.hide()
 
-
 	def toggleStatusBar(self, state):
 		if state:
 			self.statusbar.show()
 		else:
 			self.statusbar.hide()
 
-
 	def selectColor(self):
 		colDlg = QColorDialog(self)
 		# colDlg.mapToParent(QPoint(100, 100))
 		color = colDlg.getColor()
 		if color.isValid():
-			## set color for certain objects
-			print("Function selectColor has not been implemented yet.")
-			pass
+			self.curColor = color
+
+	
+	def toCanvasCoord(self, x, y):
+		cx = x - self.canvasOffset - self.canvasPos.x()
+		cy = y - self.canvasOffset - self.canvasPos.y()
+		return cx, cy
+
+	def pointInRange(self, x, y):
+		return 0<=x<=self.canvas.getWidth and 0<=y<=self.canvas.getHeight
+
+	def mousePressEvent(self, e):
+		x, y = self.toCanvasCoord(e.x(), e.y())
+		if self.pointInRange(x, y):
+			text = "(x: {0}, y: {1})".format(x, y)
+			self.statusbar.showMessage(text)
+
+	def mouseMoveEvent(self, e):
+		return self.mousePressEvent(e)
+
+	def newLine(self):
+		if self.canvas.hasCanvas:
+			self.canvas.newLine(self.curColor)
+		else:
+			self.popUpMsg("Should create a canvas before drawing a line.")
+	
+	def newPolygon(self):
+		if self.canvas.hasCanvas:
+			self.canvas.newPolygon(self.curColor)
+		else:
+			self.popUpMsg("Should create a canvas before drawing a polygon.")
+
+	def newEllipse(self):
+		if self.canvas.hasCanvas:
+			self.canvas.newEllipse(self.curColor)
+		else:
+			self.popUpMsg("Should create a canvas before drawing a ellipse.")
+
+	def newCurve(self):
+		if self.canvas.hasCanvas:
+			self.canvas.newCurve(self.curColor)
+		else:
+			self.popUpMsg("Should create a canvas before drawing a curve.")
+
 
 
 if __name__ == '__main__':
