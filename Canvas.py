@@ -120,7 +120,7 @@ class Curve(QLabel):
 
 
 class Canvas(QLabel):
-	def __init__(self, savePath='.', fileName=''):
+	def __init__(self, path=None):
 		super(Canvas, self).__init__()
 		self.nextId = 0
 		self.curId = -1
@@ -129,8 +129,6 @@ class Canvas(QLabel):
 		self.w = 0
 		self.h = 0
 		self.hasCanvas = False
-		self.savePath = savePath
-		self.fileName = fileName
 
 	def setCanvasSize(self, w, h):
 		self.w = w
@@ -167,19 +165,25 @@ class Canvas(QLabel):
 		else:
 			self.curId, self.nextId = self.nextId, self.nextId+1
 
-	def saveCanvas(self, path=None):
-		if path is None:
-			fileName = self.fileName if self.fileName else strftime("%Y%m%d-%H%M%S.bmp")
-			path = os.path.join(self.savePath, fileName)
-		self.pixmap().save(path, 'PBM')
-		print("Image successfully saved at directory: {0}".format(os.path.realpath(path)))
+	def saveCanvas(self, path):
+		if path:
+			self.pixmap().save(path, 'PBM')
+			print("Image successfully saved at directory: {0}".format(os.path.realpath(path)))
+		else:
+			print("Failed saving! Path not correct: {0}".format(os.path.realpath(path)))
 
+	def openCanvas(self, path):
+		if path:
+			pixmap = QPixmap()
+			pixmap.load(path)
 
-	def openCanvas(self, path, name):
-		self.savePath = path
-		self.fileName = name
-		# TODO
-		pass
+			pw, ph = pixmap.width(), pixmap.height()
+			self.setCanvasSize(pw, ph)
+			self.setPixmap(pixmap)
+			# self.setScaledContents(True)
+			print("Image successfully loaded from directory: {0}".format(os.path.realpath(path)))
+		else:
+			print("Failed loading! Path not correct: {0}".format(os.path.realpath(path)))
 
 	@property
 	def getWidth(self):

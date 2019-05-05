@@ -172,6 +172,7 @@ class MainWindow(QMainWindow):
 		self.resetCanvasSize(tmpDict['w'], tmpDict['h'])
 		self.canvas.newCanvas()
 		self.path = None
+		# print(self.centralWidget().size())
 
 	def popUpMsg(self, text):
 		msg = QMessageBox()
@@ -184,14 +185,20 @@ class MainWindow(QMainWindow):
 	def openFile(self):
 		fileDlg = QFileDialog()
 		fileDlg.setFilter(fileDlg.filter() | QDir.Hidden)
-		fname = fileDlg.getOpenFileName(self, 'Open image', './Demos/')
-		if fname[0]:
-			if fname[0][-4:] not in imageTypes:
-				# pop up msg: can only open .bmp file
-				self.popUpMsg("Can only open image-typed files.")
-			else:
-				# TODO: show the file 
-				print("Open file functionality has not been implemented yet.")
+		fileDlg.setDefaultSuffix('bmp')
+		fileDlg.setDirectory("./Demos/")
+		fileDlg.setAcceptMode(QFileDialog.AcceptOpen)
+		fileDlg.setNameFilters(['PBM (*.bmp)'])
+		if fileDlg.exec_() == QDialog.Accepted:
+			path = fileDlg.selectedFiles()[0]
+			self.canvas.openCanvas(path)
+			self.path = path
+
+		# fname = fileDlg.getOpenFileName(self, 'Open image', './Demos/')
+		# if fname[0]:
+		# 	if fname[0][-4:] not in imageTypes:
+		# 		# pop up msg: can only open .bmp file
+		# 		self.popUpMsg("Can only open image-typed files.")
 
 
 	def saveFile(self):
@@ -209,11 +216,11 @@ class MainWindow(QMainWindow):
 			self.popUpMsg("Should create a canvas before saving the canvas.")
 		else:
 			fileDlg = QFileDialog()
-			# fileDlg.setFilter(fileDlg.filter() | QDir.Hidden)
-			# fileDlg.setDefaultSuffix('bmp')
+			fileDlg.setFilter(fileDlg.filter() | QDir.Hidden)
+			fileDlg.setDefaultSuffix('bmp')
 			fileDlg.setDirectory("./Demos/")
 			fileDlg.setAcceptMode(QFileDialog.AcceptSave)
-			# fileDlg.setNameFilters(['PBM (*.bmp)'])
+			fileDlg.setNameFilters(['PBM (*.bmp)'])
 			# fileDlg.selectFile(strftime("%Y%m%d-%H%M%S.bmp")
 			# fname = fileDlg.getSaveFileName(self, 'Save image', '.', 'PBM (*.bmp)')
 			if fileDlg.exec_() == QDialog.Accepted:
