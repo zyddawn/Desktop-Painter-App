@@ -5,7 +5,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import sys
 import os
-from Canvas import *
+from canvas import *
 import random
 
 iconPath = './Icons'
