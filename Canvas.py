@@ -141,6 +141,7 @@ class Canvas(QLabel):
 		self.pixmap().fill(self.background_color)
 		self.setAlignment(Qt.AlignCenter)
 		self.hasCanvas = True
+		self.update()
 
 	def createElement(self, pType, pColor, pId=None, *args, **kwargs):
 		# check Id
@@ -167,7 +168,7 @@ class Canvas(QLabel):
 
 	def saveCanvas(self, path):
 		if path:
-			self.pixmap().save(path, 'PBM')
+			self.pixmap().save(path, 'BMP')
 			print("Image successfully saved at directory: {0}".format(os.path.realpath(path)))
 		else:
 			print("Failed saving! Path not correct: {0}".format(os.path.realpath(path)))
@@ -176,10 +177,9 @@ class Canvas(QLabel):
 		if path:
 			pixmap = QPixmap()
 			pixmap.load(path)
-
-			pw, ph = pixmap.width(), pixmap.height()
-			self.setCanvasSize(pw, ph)
 			self.setPixmap(pixmap)
+			self.setAlignment(Qt.AlignCenter)
+			self.update()
 			# self.setScaledContents(True)
 			print("Image successfully loaded from directory: {0}".format(os.path.realpath(path)))
 		else:
