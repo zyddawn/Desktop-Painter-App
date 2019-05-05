@@ -1,8 +1,10 @@
 # cache files
 __pycache__
 
-# Demos
+# images
 Demos/*
+Images/*
+Icons/*
 
 # gitignore
 .gitignore
