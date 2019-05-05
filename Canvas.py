@@ -3,6 +3,7 @@
 from PyQt5.QtWidgets import * 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from time import *
 
 class Element(QLabel):
 	ElementsTypes = ['Line', 'Polygon', 'Ellipse', 'Curve']
@@ -118,7 +119,7 @@ class Curve(QLabel):
 
 
 class Canvas(QLabel):
-	def __init__(self):
+	def __init__(self, savePath='.', fileName=''):
 		super(Canvas, self).__init__()
 		self.nextId = 0
 		self.curId = -1
@@ -127,18 +128,21 @@ class Canvas(QLabel):
 		self.w = 0
 		self.h = 0
 		self.hasCanvas = False
+		self.savePath = savePath
+		self.fileName = fileName
 
 	def setCanvasSize(self, w, h):
 		self.w = w
 		self.h = h
 		
-	def newCanvas(self):
+	def newCanvas(self, path):
 		self.background_color = QColor(Qt.white)
 		emptyCanvas = QPixmap(self.w, self.h)
 		self.setPixmap(emptyCanvas)
 		self.pixmap().fill(self.background_color)
 		self.setAlignment(Qt.AlignCenter)
 		self.hasCanvas = True
+		self.savePath = path
 
 	def createElement(self, pType, pColor, pId=None, *args, **kwargs):
 		# check Id
@@ -164,9 +168,13 @@ class Canvas(QLabel):
 			self.curId, self.nextId = self.nextId, self.nextId+1
 
 	def saveCanvas(self):
+		# TODO
 		pass
 
-	def openCanvas(self):
+	def openCanvas(self, path, name):
+		self.savePath = path
+		self.fileName = name
+		# TODO
 		pass
 
 	@property

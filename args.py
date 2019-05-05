@@ -15,16 +15,13 @@ class OPs(object):
 	def params(self):
 		return self._params
 
-
-
 def parseArgs(argv):
 	parser = argparse.ArgumentParser(description='Command Line Arguments for Yudong\'s Mini CG System', 
 									add_help=False)
 	parser.add_argument('--script', default='', type=str, dest='script')
-	parser.add_argument('--path', default='', type=str, dest='path')
+	parser.add_argument('--path', default='.', type=str, dest='path')
 	args = parser.parse_args(argv[1:])
 	return args
-
 
 def parseScript(path):
 	if os.path.exists(path):
