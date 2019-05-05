@@ -2,4 +2,7 @@
 __pycache__
 
 # Demos
-./Demos/*
+Demos/*
+
+# gitignore
+.gitignore
