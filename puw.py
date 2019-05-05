@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import * 
 from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 
 # PUW refer to pop-up-window
 class PUWGetCanvasSize(QDialog):
@@ -67,10 +68,10 @@ class PUWGetLineSettings(QDialog):
 		self.y1Edit.setFixedWidth(60)
 		self.x2Edit.setFixedWidth(60)
 		self.y2Edit.setFixedWidth(60)
-		self.x1Edit.setText('10')
-		self.y1Edit.setText('10')
-		self.x2Edit.setText('20')
-		self.y2Edit.setText('20')
+		self.x1Edit.setText('100')
+		self.y1Edit.setText('100')
+		self.x2Edit.setText('300')
+		self.y2Edit.setText('400')
 		OkBtn = QPushButton("OK")
 		OkBtn.clicked.connect(self.clickOK)
 		OkBtn.setShortcut("Enter")

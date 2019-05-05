@@ -6,7 +6,6 @@ from PyQt5.QtCore import *
 import sys
 import os
 from canvas import *
-from args import *
 from puw import *
 import random
 from time import *
@@ -16,18 +15,13 @@ imageTypes = ['.bmp', '.png', '.jpeg']
 
 
 class MainWindow(QMainWindow):
-	def __init__(self, args):
+	def __init__(self):
 		super(MainWindow, self).__init__()
 		self.initUI()
 		self.canvasPos = self.centralWidget().pos()
 		self.canvasOffset = 10
 		self.curColor = QColor(0, 0, 0)
-		self.args = args
-		self.openGUI = False if self.args.script else True
-		if self.openGUI:
-			self.runGUI()
-		else:
-			self.runCLT()
+		self.path = None
 
 	def initUI(self):
 		self.setUpWindow(0.8)
@@ -35,7 +29,7 @@ class MainWindow(QMainWindow):
 		self.setUpStatusBar()
 		self.setUpCanvas()
 		self.setUpToolBar()
-		# self.show()
+		self.show()
 
 	def setUpWindow(self, ratio=0.8):
 		ScreenRect = QDesktopWidget().availableGeometry()
@@ -161,7 +155,7 @@ class MainWindow(QMainWindow):
 		self.setCentralWidget(self.canvas)
 		self.setMouseTracking(True)
 
-	def resetCanvasSize(self, w=None, h=None):
+	def resetCanvasSize(self, w, h):
 		if not (isinstance(w,int) and isinstance(h,int) and 100<=w<=1000 and 100<=h<=1000):
 			print("Set default canvas size.")
 			w = self.canvas.width()-self.canvasOffset*2
@@ -176,7 +170,8 @@ class MainWindow(QMainWindow):
 		tmpDict = {"w": -1, "h": -1}
 		win = PUWGetCanvasSize(tmpDict, self)
 		self.resetCanvasSize(tmpDict['w'], tmpDict['h'])
-		self.canvas.newCanvas(self.args.path)
+		self.canvas.newCanvas()
+		self.path = None
 
 	def popUpMsg(self, text):
 		msg = QMessageBox()
@@ -187,7 +182,9 @@ class MainWindow(QMainWindow):
 
 
 	def openFile(self):
-		fname = QFileDialog.getOpenFileName(self, 'Open file', self.args.path)
+		fileDlg = QFileDialog()
+		fileDlg.setFilter(fileDlg.filter() | QDir.Hidden)
+		fname = fileDlg.getOpenFileName(self, 'Open image', './Demos/')
 		if fname[0]:
 			if fname[0][-4:] not in imageTypes:
 				# pop up msg: can only open .bmp file
@@ -198,12 +195,32 @@ class MainWindow(QMainWindow):
 
 
 	def saveFile(self):
-		print("Function saveFile has not been implemented yet.")
-		pass
+		if not self.canvas.hasCanvas:
+			self.popUpMsg("Should create a canvas before saving the canvas.")
+		else:
+			if self.path is None:
+				self.saveFileAs()
+			else:
+				self.canvas.saveCanvas(self.path)
+
 
 	def saveFileAs(self):
-		print("Function saveFileAs has not been implemented yet.")
-		pass
+		if not self.canvas.hasCanvas:
+			self.popUpMsg("Should create a canvas before saving the canvas.")
+		else:
+			fileDlg = QFileDialog()
+			# fileDlg.setFilter(fileDlg.filter() | QDir.Hidden)
+			# fileDlg.setDefaultSuffix('bmp')
+			fileDlg.setDirectory("./Demos/")
+			fileDlg.setAcceptMode(QFileDialog.AcceptSave)
+			# fileDlg.setNameFilters(['PBM (*.bmp)'])
+			# fileDlg.selectFile(strftime("%Y%m%d-%H%M%S.bmp")
+			# fname = fileDlg.getSaveFileName(self, 'Save image', '.', 'PBM (*.bmp)')
+			if fileDlg.exec_() == QDialog.Accepted:
+				path = fileDlg.selectedFiles()[0]
+				self.canvas.saveCanvas(path)
+				self.path = path
+
 
 	def toggleToolBar(self, state):
 		if state:
@@ -285,28 +302,13 @@ class MainWindow(QMainWindow):
 		else:
 			self.popUpMsg("Should create a canvas before drawing a curve.")
 
-	def execCmds(self):
-		op_arr = parseScript(self.args.script)
-		for op in op_arr:
-			# TODO
-			pass
-
-	def runGUI(self):
-		self.show()
-
-	def runCLT(self):
-		# TODO
-		self.execCmds()
-		# sleep(3)
-		sys.exit(0)
-
 
 
 if __name__ == '__main__':
 	
 	print("sys.argv: {}".format(sys.argv))
-	args = parseArgs(sys.argv)
+	# args = parseArgs(sys.argv)
 	app = QApplication(sys.argv)
-	ex = MainWindow(args)
+	ex = MainWindow()
 	sys.exit(app.exec_())
 

@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from time import *
+import os
 
 class Element(QLabel):
 	ElementsTypes = ['Line', 'Polygon', 'Ellipse', 'Curve']
@@ -135,14 +136,13 @@ class Canvas(QLabel):
 		self.w = w
 		self.h = h
 		
-	def newCanvas(self, path):
+	def newCanvas(self):
 		self.background_color = QColor(Qt.white)
 		emptyCanvas = QPixmap(self.w, self.h)
 		self.setPixmap(emptyCanvas)
 		self.pixmap().fill(self.background_color)
 		self.setAlignment(Qt.AlignCenter)
 		self.hasCanvas = True
-		self.savePath = path
 
 	def createElement(self, pType, pColor, pId=None, *args, **kwargs):
 		# check Id
@@ -167,9 +167,13 @@ class Canvas(QLabel):
 		else:
 			self.curId, self.nextId = self.nextId, self.nextId+1
 
-	def saveCanvas(self):
-		# TODO
-		pass
+	def saveCanvas(self, path=None):
+		if path is None:
+			fileName = self.fileName if self.fileName else strftime("%Y%m%d-%H%M%S.bmp")
+			path = os.path.join(self.savePath, fileName)
+		self.pixmap().save(path, 'PBM')
+		print("Image successfully saved at directory: {0}".format(os.path.realpath(path)))
+
 
 	def openCanvas(self, path, name):
 		self.savePath = path
