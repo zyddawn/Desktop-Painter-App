@@ -288,11 +288,11 @@ class MainWindow(QMainWindow):
 
 	# Some bug when resizing canvas
 	def mousePressEvent(self, e):
-		# x, y = self.toCanvasCoord(e.x(), e.y())
-		# if self.pointInRange(x, y):
-		# 	text = "(x: {0}, y: {1})".format(x, y)
-		# 	self.statusbar.showMessage(text)
-		pass
+		x, y = self.toCanvasCoord(e.x(), e.y())
+		if self.pointInRange(x, y):
+			text = "(x: {0}, y: {1})".format(x, y)
+			self.statusbar.showMessage(text)
+		# pass
 
 	def mouseMoveEvent(self, e):
 		return self.mousePressEvent(e)

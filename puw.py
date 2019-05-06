@@ -53,7 +53,7 @@ class PUWGetLineSettings(QDialog):
 	def __init__(self, params, parent=None):
 		super(PUWGetLineSettings, self).__init__(parent)
 		self.params = params
-		self.algorithm = "DDA"
+		self.algorithm = "Bresenham"
 		self.initUI()
 
 	def initUI(self):
@@ -76,8 +76,9 @@ class PUWGetLineSettings(QDialog):
 		self.x2Edit.setText(str(random.randint(100, 900)))
 		self.y2Edit.setText(str(random.randint(100, 500)))
 		self.algorithmChoice = QComboBox(self)
-		self.algorithmChoice.addItem("DDA")
 		self.algorithmChoice.addItem("Bresenham")
+		self.algorithmChoice.addItem("Midpoint")
+		self.algorithmChoice.addItem("DDA")
 		self.algorithmChoice.activated[str].connect(self.getAlgorithm)
 		OkBtn = QPushButton("OK")
 		OkBtn.clicked.connect(self.clickOK)
@@ -175,7 +176,6 @@ class PUWGetEllipseSettings(QDialog):
 		CancelBtn.clicked.connect(self.clickCancel)
 		CancelBtn.setAutoDefault(False)
 		
-
 		h1boxLayout = QHBoxLayout()
 		h1boxLayout.addStretch()
 		h1boxLayout.addWidget(x)
