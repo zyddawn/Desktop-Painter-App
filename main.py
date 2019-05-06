@@ -7,7 +7,6 @@ import sys
 import os
 from canvas import *
 from puw import *
-import random
 from time import *
 
 iconPath = './Icons'
@@ -129,7 +128,7 @@ class MainWindow(QMainWindow):
 		# new ellipse
 		newEllipseAct = QAction(QIcon(os.path.join(iconPath, 'icons8-sphere-64.png')), 'Create new ellipse', self)
 		newEllipseAct.setStatusTip('Create new ellipse')
-		newEllipseAct.setShortcut('Shift+Ctrl+E')
+		newEllipseAct.setShortcut('Shift+Ctrl+O')
 		newEllipseAct.triggered.connect(self.newEllipse)
 		# new curve
 		newCurveAct = QAction(QIcon(os.path.join(iconPath, 'icons8-graph-report-64.png')), 'Create new curve', self)
@@ -137,10 +136,31 @@ class MainWindow(QMainWindow):
 		newCurveAct.setShortcut('Shift+Ctrl+C')
 		newCurveAct.triggered.connect(self.newCurve)
 
+		translateAct = QAction(QIcon(os.path.join(iconPath, 'icons8-left-64.png')), 'Translate', self)
+		translateAct.setStatusTip('Translate')
+		translateAct.triggered.connect(self.translate)
+
+		rotateAct = QAction(QIcon(os.path.join(iconPath, 'icons8-rotate-right-64.png')), 'Rotate', self)
+		rotateAct.setStatusTip('Rotate')
+		rotateAct.triggered.connect(self.rotate)
+
+		scaleAct = QAction(QIcon(os.path.join(iconPath, 'icons8-drag-64.png')), 'Scale', self)
+		scaleAct.setStatusTip('Scale')
+		scaleAct.triggered.connect(self.scale)
+
+		clipLineAct = QAction(QIcon(os.path.join(iconPath, 'icons8-scissors-64.png')), 'Clip line', self)
+		clipLineAct.setStatusTip('Clip line')
+		clipLineAct.triggered.connect(self.clipLine)
+
 		self.toolbar.addAction(newLineAct)
 		self.toolbar.addAction(newPolygonAct)
 		self.toolbar.addAction(newEllipseAct)
 		self.toolbar.addAction(newCurveAct)
+		self.toolbar.addSeparator()
+		self.toolbar.addAction(translateAct)
+		self.toolbar.addAction(rotateAct)
+		self.toolbar.addAction(scaleAct)
+		self.toolbar.addAction(clipLineAct)
 		self.toolbar.addSeparator()
 		self.toolbar.addAction(colorAct)
 
@@ -148,7 +168,6 @@ class MainWindow(QMainWindow):
 	def setUpStatusBar(self):
 		self.statusbar = self.statusBar()
 		self.statusbar.showMessage('Ready')
-		# print("statusbar: {}".format(self.statusbar.size()))
 
 	def setUpCanvas(self):
 		self.canvas = Canvas()
@@ -163,23 +182,36 @@ class MainWindow(QMainWindow):
 		self.canvas.setCanvasSize(w, h)
 
 	def newCanvas(self, w=None, h=None):
-		# TODO: Ask if need to save old canvas
 		if self.canvas.hasCanvas:
-			print("save canvas query not implemented yet")
-
+			ret = self.popUpMsgTwoKeys("The current canvas will be overrided.", "Would you like to save the changes?")
+			if ret:
+				self.saveFile()
 		tmpDict = {"w": -1, "h": -1}
 		win = PUWGetCanvasSize(tmpDict, self)
 		self.resetCanvasSize(tmpDict['w'], tmpDict['h'])
 		self.canvas.newCanvas()
 		self.path = None
-		# print(self.centralWidget().size())
 
-	def popUpMsg(self, text):
+	def popUpMsgOneKey(self, text):
 		msg = QMessageBox()
 		pixmap = QPixmap(os.path.join(iconPath, 'icons8-cartoon-face-64.png'))
 		msg.setIconPixmap(pixmap)
 		msg.setText(text)
-		msg.exec_()
+		if msg.exec_() == QMessageBox.Accepted:
+			return True
+		return False
+
+	def popUpMsgTwoKeys(self, mainText, helpText=''):
+		msg = QMessageBox()
+		pixmap = QPixmap(os.path.join(iconPath, 'icons8-cartoon-face-64.png'))
+		msg.setIconPixmap(pixmap)
+		msg.setText(mainText)
+		msg.setInformativeText(helpText)
+		msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+		msg.setDefaultButton(QMessageBox.No)
+		if msg.exec_() == QMessageBox.Yes:
+			return True
+		return False
 
 
 	def openFile(self):
@@ -194,16 +226,10 @@ class MainWindow(QMainWindow):
 			self.canvas.openCanvas(path)
 			self.path = path
 
-		# fname = fileDlg.getOpenFileName(self, 'Open image', './Demos/')
-		# if fname[0]:
-		# 	if fname[0][-4:] not in imageTypes:
-		# 		# pop up msg: can only open .bmp file
-		# 		self.popUpMsg("Can only open image-typed files.")
-
 
 	def saveFile(self):
 		if not self.canvas.hasCanvas:
-			self.popUpMsg("Should create a canvas before saving the canvas.")
+			self.popUpMsgOneKey("Should create a canvas before saving the canvas.")
 		else:
 			if self.path is None:
 				self.saveFileAs()
@@ -213,7 +239,7 @@ class MainWindow(QMainWindow):
 
 	def saveFileAs(self):
 		if not self.canvas.hasCanvas:
-			self.popUpMsg("Should create a canvas before saving the canvas.")
+			self.popUpMsgOneKey("Should create a canvas before saving the canvas.")
 		else:
 			fileDlg = QFileDialog()
 			fileDlg.setFilter(fileDlg.filter() | QDir.Hidden)
@@ -262,10 +288,11 @@ class MainWindow(QMainWindow):
 
 	# Some bug when resizing canvas
 	def mousePressEvent(self, e):
-		x, y = self.toCanvasCoord(e.x(), e.y())
-		if self.pointInRange(x, y):
-			text = "(x: {0}, y: {1})".format(x, y)
-			self.statusbar.showMessage(text)
+		# x, y = self.toCanvasCoord(e.x(), e.y())
+		# if self.pointInRange(x, y):
+		# 	text = "(x: {0}, y: {1})".format(x, y)
+		# 	self.statusbar.showMessage(text)
+		pass
 
 	def mouseMoveEvent(self, e):
 		return self.mousePressEvent(e)
@@ -274,12 +301,12 @@ class MainWindow(QMainWindow):
 		if self.canvas.hasCanvas:
 			# TODO: implement algorithm choice
 			# TODO: judge if point valid
-			pArr = []
-			pWin = PUWGetLineSettings(pArr, self)
-			if pArr:
-				self.canvas.newLine(self.curColor, p1=pArr[0], p2=pArr[1])
+			params = {}
+			win = PUWGetLineSettings(params, self)
+			if params:
+				self.canvas.newLine(self.curColor, p1=params['p1'], p2=params['p2'])
 		else:
-			self.popUpMsg("Should create a canvas before drawing a line.")
+			self.popUpMsgOneKey("Should create a canvas before drawing a line.")
 	
 	def newPolygon(self):
 		if self.canvas.hasCanvas:
@@ -287,19 +314,18 @@ class MainWindow(QMainWindow):
 			# TODO: judge if point valid
 			self.canvas.newPolygon(self.curColor)
 		else:
-			self.popUpMsg("Should create a canvas before drawing a polygon.")
+			self.popUpMsgOneKey("Should create a canvas before drawing a polygon.")
 
 	def newEllipse(self):
 		if self.canvas.hasCanvas:
 			# TODO: implement algorithm choice
 			# TODO: judge if point valid
-			rCenter = []
-			rArr = []
-			pWin = PUWGetEllipseSettings(rCenter, rArr, self)
-			if rArr:
-				self.canvas.newEllipse(self.curColor, rCenter=rCenter[0], rx=rArr[0], ry=rArr[1])
+			params = {}
+			win = PUWGetEllipseSettings(params, self)
+			if params:
+				self.canvas.newEllipse(self.curColor, rCenter=params['center'], rx=params['rx'], ry=params['ry'])
 		else:
-			self.popUpMsg("Should create a canvas before drawing a ellipse.")
+			self.popUpMsgOneKey("Should create a canvas before drawing a ellipse.")
 
 	def newCurve(self):
 		if self.canvas.hasCanvas:
@@ -307,8 +333,70 @@ class MainWindow(QMainWindow):
 			# TODO: judge if point valid
 			self.canvas.newCurve(self.curColor)
 		else:
-			self.popUpMsg("Should create a canvas before drawing a curve.")
+			self.popUpMsgOneKey("Should create a canvas before drawing a curve.")
 
+	def translate(self):
+		if self.canvas.hasCanvas:
+			if self.canvas.nextId > 0:
+				params = {}
+				win = PUWGetTranslateSettings(params, self)
+				if params:
+					if params['id'] not in self.canvas.allElements.keys():
+						self.popUpMsgOneKey("Element id doesn't exist!")
+					else:
+						# TODO
+						pass
+			else:
+				self.popUpMsgOneKey("Should create a element first before translating it.")
+		else:
+			self.popUpMsgOneKey("Should create a canvas before translating elements.")
+
+	def rotate(self):
+		if self.canvas.hasCanvas:
+			if self.canvas.nextId > 0:
+				params = {}
+				win = PUWGetRotateSettings(params, self)
+				if params:
+					if params['id'] not in self.canvas.allElements.keys():
+						self.popUpMsgOneKey("Element id doesn't exist!")
+					else:
+						# TODO
+						pass
+			else:
+				self.popUpMsgOneKey("Should create a element first before rotating it.")
+		else:
+			self.popUpMsgOneKey("Should create a canvas before rotating elements.")
+
+	def scale(self):
+		if self.canvas.hasCanvas:
+			if self.canvas.nextId > 0:
+				params = {}
+				win = PUWGetScaleSettings(params, self)
+				if params:
+					if params['id'] not in self.canvas.allElements.keys():
+						self.popUpMsgOneKey("Element id doesn't exist!")
+					else:
+						# TODO
+						pass
+			else:
+				self.popUpMsgOneKey("Should create a element first before scaling it.")
+		else:
+			self.popUpMsgOneKey("Should create a canvas before scaling elements.")
+
+	def clipLine(self):
+		if self.canvas.hasCanvas:
+			params = {}
+			win = PUWGetClipLineSettings(params, self)
+			if params:
+				if params['id'] not in self.canvas.allElements.keys():
+					self.popUpMsgOneKey("Element id doesn't exist!")
+				elif self.canvas.allElements[params['id']].type is not "Line":
+					self.popUpMsgOneKey("The selected element is not a line!")
+				else:
+					# TODO
+					pass
+		else:
+			self.popUpMsgOneKey("Should create a canvas before clipping lines.")
 
 
 if __name__ == '__main__':

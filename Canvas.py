@@ -134,7 +134,13 @@ class Canvas(QLabel):
 		self.w = w
 		self.h = h
 		
+	def clearElements(self):
+		self.nextId = 0
+		self.curId = -1
+		self.allElements = {}
+
 	def newCanvas(self):
+		self.clearElements()
 		self.background_color = QColor(Qt.white)
 		emptyCanvas = QPixmap(self.w, self.h)
 		self.setPixmap(emptyCanvas)
@@ -147,6 +153,7 @@ class Canvas(QLabel):
 		# check Id
 		self.checkIdValid(pId)
 		self.allElements[self.curId] = Element(self, pType=pType, pColor=pColor, pId=self.curId, *args, **kwargs)
+		print(self.allElements.keys())
 
 	@property
 	def curElement(self):
@@ -179,6 +186,7 @@ class Canvas(QLabel):
 			pixmap.load(path)
 			self.setPixmap(pixmap)
 			self.setAlignment(Qt.AlignCenter)
+			self.hasCanvas = True
 			self.update()
 			# self.setScaledContents(True)
 			print("Image successfully loaded from directory: {0}".format(os.path.realpath(path)))

@@ -1,12 +1,13 @@
 from PyQt5.QtWidgets import * 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+import random
 
 # PUW refer to pop-up-window
 class PUWGetCanvasSize(QDialog):
-	def __init__(self, tmpDict, parent=None):
+	def __init__(self, params, parent=None):
 		super(PUWGetCanvasSize, self).__init__(parent)
-		self.tmpDict = tmpDict
+		self.params = params
 		self.initUI()
 
 	def initUI(self):
@@ -40,7 +41,7 @@ class PUWGetCanvasSize(QDialog):
 		self.exec()
 
 	def clickOK(self):
-		self.tmpDict['w'], self.tmpDict['h'] = int(self.widthEdit.text()), int(self.heightEdit.text())
+		self.params['w'], self.params['h'] = int(self.widthEdit.text()), int(self.heightEdit.text())
 		self.close()
 		
 	def clickCancel(self):
@@ -48,13 +49,14 @@ class PUWGetCanvasSize(QDialog):
 
 
 class PUWGetLineSettings(QDialog):
-	def __init__(self, pArr, parent=None):
+	def __init__(self, params, parent=None):
 		super(PUWGetLineSettings, self).__init__(parent)
-		self.pArr = pArr
+		self.params = params
+		self.params['algorithm'] = 'DDA'
 		self.initUI()
 
 	def initUI(self):
-		self.setFixedSize(300, 200)
+		self.setFixedSize(260, 185)
 		self.setWindowTitle("Line settings")
 		x1 = QLabel("x1")
 		y1 = QLabel("y1")
@@ -68,10 +70,14 @@ class PUWGetLineSettings(QDialog):
 		self.y1Edit.setFixedWidth(60)
 		self.x2Edit.setFixedWidth(60)
 		self.y2Edit.setFixedWidth(60)
-		self.x1Edit.setText('100')
-		self.y1Edit.setText('100')
-		self.x2Edit.setText('300')
-		self.y2Edit.setText('400')
+		self.x1Edit.setText(str(random.randint(100, 900)))
+		self.y1Edit.setText(str(random.randint(100, 500)))
+		self.x2Edit.setText(str(random.randint(100, 900)))
+		self.y2Edit.setText(str(random.randint(100, 500)))
+		self.algorithmChoice = QComboBox(self)
+		self.algorithmChoice.addItem("DDA")
+		self.algorithmChoice.addItem("Bresenham")
+		self.algorithmChoice.activated[str].connect(self.getAlgorithm)
 		OkBtn = QPushButton("OK")
 		OkBtn.clicked.connect(self.clickOK)
 		OkBtn.setShortcut("Enter")
@@ -80,42 +86,66 @@ class PUWGetLineSettings(QDialog):
 		CancelBtn.clicked.connect(self.clickCancel)
 		CancelBtn.setAutoDefault(False)
 		
-		grid = QGridLayout()
-		grid.addWidget(x1, 1, 0)
-		grid.addWidget(self.x1Edit, 1, 1)
-		grid.addWidget(y1, 1, 2)
-		grid.addWidget(self.y1Edit, 1, 3)
-		grid.addWidget(x2, 2, 0)
-		grid.addWidget(self.x2Edit, 2, 1)
-		grid.addWidget(y2, 2, 2)
-		grid.addWidget(self.y2Edit, 2, 3)
-		grid.addWidget(QLabel(""), 3, 0)
-		grid.addWidget(CancelBtn, 3, 1)
-		grid.addWidget(OkBtn, 3, 2)
-		grid.addWidget(QLabel(""), 3, 3)
+		h1boxLayout = QHBoxLayout()
+		h1boxLayout.addStretch()
+		h1boxLayout.addWidget(x1)
+		h1boxLayout.addWidget(self.x1Edit)
+		h1boxLayout.addWidget(y1)
+		h1boxLayout.addWidget(self.y1Edit)
+		h1boxLayout.addStretch()
+
+		h2boxLayout = QHBoxLayout()
+		h2boxLayout.addStretch()
+		h2boxLayout.addWidget(x2)
+		h2boxLayout.addWidget(self.x2Edit)
+		h2boxLayout.addWidget(y2)
+		h2boxLayout.addWidget(self.y2Edit)
+		h2boxLayout.addStretch()
+
+		h3boxLayout = QHBoxLayout()
+		h3boxLayout.addStretch()
+		h3boxLayout.addWidget(QLabel("Algorithm"))
+		h3boxLayout.addWidget(self.algorithmChoice)
+		h3boxLayout.addStretch()
+
+		h4boxLayout = QHBoxLayout()
+		h4boxLayout.addStretch()
+		h4boxLayout.addWidget(OkBtn)
+		h4boxLayout.addWidget(CancelBtn)
+		h4boxLayout.addStretch()
+
+		mainLayout = QVBoxLayout()
+		mainLayout.addLayout(h1boxLayout)
+		mainLayout.addLayout(h2boxLayout)
+		mainLayout.addLayout(h3boxLayout)
+		mainLayout.addLayout(h4boxLayout)
 		
-		self.setLayout(grid)
+		self.setLayout(mainLayout)
 		self.exec()
 
 	def clickOK(self):
-		self.pArr.append(QPoint(int(self.x1Edit.text()), int(self.y1Edit.text())))
-		self.pArr.append(QPoint(int(self.x2Edit.text()), int(self.y2Edit.text())))
+		self.params['p1'] = QPoint(int(self.x1Edit.text()), int(self.y1Edit.text()))
+		self.params['p2'] = QPoint(int(self.x2Edit.text()), int(self.y2Edit.text()))
 		self.close()
 		
 	def clickCancel(self):
 		self.close()
 
+	def getAlgorithm(self, text):
+		self.params['algorithm'] = text
+
+
 
 class PUWGetEllipseSettings(QDialog):
-	def __init__(self, rCenter, rArr, parent=None):
+	def __init__(self, params, parent=None):
 		super(PUWGetEllipseSettings, self).__init__(parent)
-		self.rCenter = rCenter
-		self.rArr = rArr
+		self.params = params
+		self.params['algorithm'] = 'Midpoint-circle'
 		self.initUI()
 
 	def initUI(self):
-		self.setFixedSize(300, 200)
-		self.setWindowTitle("Line settings")
+		self.setFixedSize(260, 185)
+		self.setWindowTitle("Ellipse settings")
 		x = QLabel("x")
 		y = QLabel("y")
 		rx = QLabel("rx")
@@ -128,10 +158,13 @@ class PUWGetEllipseSettings(QDialog):
 		self.yEdit.setFixedWidth(60)
 		self.rxEdit.setFixedWidth(60)
 		self.ryEdit.setFixedWidth(60)
-		self.xEdit.setText('200')
-		self.yEdit.setText('200')
-		self.rxEdit.setText('60')
-		self.ryEdit.setText('60')
+		self.xEdit.setText(str(random.randint(200, 900)))
+		self.yEdit.setText(str(random.randint(200, 450)))
+		self.rxEdit.setText(str(random.randint(50, 100)))
+		self.ryEdit.setText(str(random.randint(50, 100)))
+		self.algorithmChoice = QComboBox(self)
+		self.algorithmChoice.addItem("Midpoint-circle")
+		self.algorithmChoice.activated[str].connect(self.getAlgorithm)
 		OkBtn = QPushButton("OK")
 		OkBtn.clicked.connect(self.clickOK)
 		OkBtn.setShortcut("Enter")
@@ -140,33 +173,364 @@ class PUWGetEllipseSettings(QDialog):
 		CancelBtn.clicked.connect(self.clickCancel)
 		CancelBtn.setAutoDefault(False)
 		
-		grid = QGridLayout()
-		grid.addWidget(x, 1, 0)
-		grid.addWidget(self.xEdit, 1, 1)
-		grid.addWidget(y, 1, 2)
-		grid.addWidget(self.yEdit, 1, 3)
-		grid.addWidget(rx, 2, 0)
-		grid.addWidget(self.rxEdit, 2, 1)
-		grid.addWidget(ry, 2, 2)
-		grid.addWidget(self.ryEdit, 2, 3)
-		grid.addWidget(QLabel(""), 3, 0)
-		grid.addWidget(CancelBtn, 3, 1)
-		grid.addWidget(OkBtn, 3, 2)
-		grid.addWidget(QLabel(""), 3, 3)
+
+		h1boxLayout = QHBoxLayout()
+		h1boxLayout.addStretch()
+		h1boxLayout.addWidget(x)
+		h1boxLayout.addWidget(self.xEdit)
+		h1boxLayout.addWidget(y)
+		h1boxLayout.addWidget(self.yEdit)
+		h1boxLayout.addStretch()
+
+		h2boxLayout = QHBoxLayout()
+		h2boxLayout.addStretch()
+		h2boxLayout.addWidget(rx)
+		h2boxLayout.addWidget(self.rxEdit)
+		h2boxLayout.addWidget(ry)
+		h2boxLayout.addWidget(self.ryEdit)
+		h2boxLayout.addStretch()
+
+		h3boxLayout = QHBoxLayout()
+		h3boxLayout.addStretch()
+		h3boxLayout.addWidget(QLabel("Algorithm"))
+		h3boxLayout.addWidget(self.algorithmChoice)
+		h3boxLayout.addStretch()
+
+		h4boxLayout = QHBoxLayout()
+		h4boxLayout.addStretch()
+		h4boxLayout.addWidget(OkBtn)
+		h4boxLayout.addWidget(CancelBtn)
+		h4boxLayout.addStretch()
+
+		mainLayout = QVBoxLayout()
+		mainLayout.addLayout(h1boxLayout)
+		mainLayout.addLayout(h2boxLayout)
+		mainLayout.addLayout(h3boxLayout)
+		mainLayout.addLayout(h4boxLayout)
 		
-		self.setLayout(grid)
+		self.setLayout(mainLayout)
 		self.exec()
 
 	def clickOK(self):
-		self.rCenter.append(QPoint(int(self.xEdit.text()), int(self.yEdit.text())))
-		self.rArr.append(int(self.rxEdit.text()))
-		self.rArr.append(int(self.ryEdit.text()))
+		self.params['center'] = QPoint(int(self.xEdit.text()), int(self.yEdit.text()))
+		self.params['rx'] = int(self.rxEdit.text())
+		self.params['ry'] = int(self.ryEdit.text())
 		self.close()
+
+	def clickCancel(self):
+		self.close()
+
+	def getAlgorithm(self, text):
+		self.params['algorithm'] = text
+
+
+class PUWGetTranslateSettings(QDialog):
+	def __init__(self, params, parent=None):
+		super(PUWGetTranslateSettings, self).__init__(parent)
+		self.params = params
+		self.initUI()
+
+	def initUI(self):
+		self.setFixedSize(270, 150)
+		self.setWindowTitle("Translate settings")
+		Id = QLabel("id")
+		dx = QLabel("dx")
+		dy = QLabel("dy")
+		self.idEdit = QLineEdit()
+		self.dxEdit = QLineEdit()
+		self.dyEdit = QLineEdit()
+		self.idEdit.setFixedWidth(40)
+		self.dxEdit.setFixedWidth(40)
+		self.dyEdit.setFixedWidth(40)
+		self.idEdit.setText("0")
+		self.dxEdit.setText(str(random.randint(200, 900)))
+		self.dyEdit.setText(str(random.randint(200, 450)))
+		OkBtn = QPushButton("OK")
+		OkBtn.clicked.connect(self.clickOK)
+		OkBtn.setShortcut("Enter")
+		OkBtn.setAutoDefault(True)
+		CancelBtn = QPushButton("Cancel")
+		CancelBtn.clicked.connect(self.clickCancel)
+		CancelBtn.setAutoDefault(False)
+
+		h1boxLayout = QHBoxLayout()
+		h1boxLayout.addStretch()
+		h1boxLayout.addWidget(Id)
+		h1boxLayout.addWidget(self.idEdit)
+		h1boxLayout.addWidget(dx)
+		h1boxLayout.addWidget(self.dxEdit)
+		h1boxLayout.addWidget(dy)
+		h1boxLayout.addWidget(self.dyEdit)
+		h1boxLayout.addStretch()
+
+		h2boxLayout = QHBoxLayout()
+		h2boxLayout.addStretch()
+		h2boxLayout.addWidget(OkBtn)
+		h2boxLayout.addWidget(CancelBtn)
+		h2boxLayout.addStretch()
+
+		mainLayout = QVBoxLayout()
+		mainLayout.addLayout(h1boxLayout)
+		mainLayout.addLayout(h2boxLayout)
 		
+		self.setLayout(mainLayout)
+		self.exec()
+
+	def clickOK(self):
+		self.params['id'] = int(self.idEdit.text())
+		self.params['dx'] = int(self.dxEdit.text())
+		self.params['dy'] = int(self.dyEdit.text())
+		self.close()
+
 	def clickCancel(self):
 		self.close()
 
 
+class PUWGetRotateSettings(QDialog):
+	def __init__(self, params, parent=None):
+		super(PUWGetRotateSettings, self).__init__(parent)
+		self.params = params
+		self.initUI()
 
+	def initUI(self):
+		self.setFixedSize(280, 180)
+		self.setWindowTitle("Rotate settings")
+		Id = QLabel("Id")
+		x = QLabel("Center x")
+		y = QLabel("Center y")
+		angle = QLabel("Clockwise angle")
+		self.idEdit = QLineEdit()
+		self.xEdit = QLineEdit()
+		self.yEdit = QLineEdit()
+		self.angleEdit = QLineEdit()
+		self.idEdit.setFixedWidth(30)
+		self.xEdit.setFixedWidth(40)
+		self.yEdit.setFixedWidth(40)
+		self.angleEdit.setFixedWidth(40)
+		self.idEdit.setText("0")
+		self.xEdit.setText("500")
+		self.yEdit.setText("200")
+		self.angleEdit.setText("90")
+		OkBtn = QPushButton("OK")
+		OkBtn.clicked.connect(self.clickOK)
+		OkBtn.setShortcut("Enter")
+		OkBtn.setAutoDefault(True)
+		CancelBtn = QPushButton("Cancel")
+		CancelBtn.clicked.connect(self.clickCancel)
+		CancelBtn.setAutoDefault(False)
+		
+		h1boxLayout = QHBoxLayout()
+		h1boxLayout.addStretch()
+		h1boxLayout.addWidget(Id)
+		h1boxLayout.addWidget(self.idEdit)
+		h1boxLayout.addWidget(angle)
+		h1boxLayout.addWidget(self.angleEdit)
+		h1boxLayout.addStretch()
+
+		h2boxLayout = QHBoxLayout()
+		h2boxLayout.addStretch()
+		h2boxLayout.addWidget(x)
+		h2boxLayout.addWidget(self.xEdit)
+		h2boxLayout.addWidget(y)
+		h2boxLayout.addWidget(self.yEdit)
+		h2boxLayout.addStretch()
+
+		h3boxLayout = QHBoxLayout()
+		h3boxLayout.addStretch()
+		h3boxLayout.addWidget(OkBtn)
+		h3boxLayout.addWidget(CancelBtn)
+		h3boxLayout.addStretch()
+
+		mainLayout = QVBoxLayout()
+		mainLayout.addLayout(h1boxLayout)
+		mainLayout.addLayout(h2boxLayout)
+		mainLayout.addLayout(h3boxLayout)
+		
+		self.setLayout(mainLayout)
+		self.exec()
+
+	def clickOK(self):
+		self.params['id'] = int(self.idEdit.text())
+		self.params['x'] = int(self.xEdit.text())
+		self.params['y'] = int(self.yEdit.text())
+		self.params['angle'] = int(self.angleEdit.text())
+		self.close()
+
+	def clickCancel(self):
+		self.close()
+
+
+class PUWGetScaleSettings(QDialog):
+	def __init__(self, params, parent=None):
+		super(PUWGetScaleSettings, self).__init__(parent)
+		self.params = params
+		self.initUI()
+
+	def initUI(self):
+		self.setFixedSize(280, 180)
+		self.setWindowTitle("Rotate settings")
+		Id = QLabel("Id")
+		x = QLabel("Center x")
+		y = QLabel("Center y")
+		scale = QLabel("Scale size")
+		self.idEdit = QLineEdit()
+		self.xEdit = QLineEdit()
+		self.yEdit = QLineEdit()
+		self.scaleEdit = QLineEdit()
+		self.idEdit.setFixedWidth(40)
+		self.xEdit.setFixedWidth(40)
+		self.yEdit.setFixedWidth(40)
+		self.scaleEdit.setFixedWidth(50)
+		self.idEdit.setText("0")
+		self.xEdit.setText("500")
+		self.yEdit.setText("200")
+		self.scaleEdit.setText("0.5")
+		OkBtn = QPushButton("OK")
+		OkBtn.clicked.connect(self.clickOK)
+		OkBtn.setShortcut("Enter")
+		OkBtn.setAutoDefault(True)
+		CancelBtn = QPushButton("Cancel")
+		CancelBtn.clicked.connect(self.clickCancel)
+		CancelBtn.setAutoDefault(False)
+		
+		h1boxLayout = QHBoxLayout()
+		h1boxLayout.addStretch()
+		h1boxLayout.addWidget(Id)
+		h1boxLayout.addWidget(self.idEdit)
+		h1boxLayout.addWidget(scale)
+		h1boxLayout.addWidget(self.scaleEdit)
+		h1boxLayout.addStretch()
+
+		h2boxLayout = QHBoxLayout()
+		h2boxLayout.addStretch()
+		h2boxLayout.addWidget(x)
+		h2boxLayout.addWidget(self.xEdit)
+		h2boxLayout.addWidget(y)
+		h2boxLayout.addWidget(self.yEdit)
+		h2boxLayout.addStretch()
+
+		h3boxLayout = QHBoxLayout()
+		h3boxLayout.addStretch()
+		h3boxLayout.addWidget(OkBtn)
+		h3boxLayout.addWidget(CancelBtn)
+		h3boxLayout.addStretch()
+
+		mainLayout = QVBoxLayout()
+		mainLayout.addLayout(h1boxLayout)
+		mainLayout.addLayout(h2boxLayout)
+		mainLayout.addLayout(h3boxLayout)
+		
+		self.setLayout(mainLayout)
+		self.exec()
+
+	def clickOK(self):
+		self.params['id'] = int(self.idEdit.text())
+		self.params['x'] = int(self.xEdit.text())
+		self.params['y'] = int(self.yEdit.text())
+		self.params['scale'] = float(self.scaleEdit.text())
+		self.close()
+
+	def clickCancel(self):
+		self.close()
+
+
+class PUWGetClipLineSettings(QDialog):
+	def __init__(self, params, parent=None):
+		super(PUWGetClipLineSettings, self).__init__(parent)
+		self.params = params
+		self.params['algorithm'] = 'Cohen-Sutherland'
+		self.initUI()
+
+	def initUI(self):
+		self.setFixedSize(320, 180)
+		self.setWindowTitle("Clip Line settings")
+		Id = QLabel("id")
+		x1 = QLabel("x1")
+		y1 = QLabel("y1")
+		x2 = QLabel("x2")
+		y2 = QLabel("y2")
+		self.idEdit = QLineEdit()
+		self.x1Edit = QLineEdit()
+		self.y1Edit = QLineEdit()
+		self.x2Edit = QLineEdit()
+		self.y2Edit = QLineEdit()
+		self.idEdit.setFixedWidth(30)
+		self.x1Edit.setFixedWidth(40)
+		self.y1Edit.setFixedWidth(40)
+		self.x2Edit.setFixedWidth(40)
+		self.y2Edit.setFixedWidth(40)
+		self.idEdit.setText("0")
+		self.x1Edit.setText("100")
+		self.y1Edit.setText("100")
+		self.x2Edit.setText("200")
+		self.y2Edit.setText("200")
+		self.algorithmChoice = QComboBox(self)
+		self.algorithmChoice.addItem("Cohen-Sutherland")
+		self.algorithmChoice.addItem("Liang-Barsky")
+		self.algorithmChoice.activated[str].connect(self.getAlgorithm)
+		OkBtn = QPushButton("OK")
+		OkBtn.clicked.connect(self.clickOK)
+		OkBtn.setShortcut("Enter")
+		OkBtn.setAutoDefault(True)
+		CancelBtn = QPushButton("Cancel")
+		CancelBtn.clicked.connect(self.clickCancel)
+		CancelBtn.setAutoDefault(False)
+		
+		h1boxLayout = QHBoxLayout()
+		h1boxLayout.addStretch()
+		h1boxLayout.addWidget(Id)
+		h1boxLayout.addWidget(self.idEdit)
+		h1boxLayout.addWidget(QLabel("Algorithm"))
+		h1boxLayout.addWidget(self.algorithmChoice)
+		h1boxLayout.addStretch()
+
+		h2boxLayout = QHBoxLayout()
+		h2boxLayout.addStretch()
+		h2boxLayout.addWidget(x1)
+		h2boxLayout.addWidget(self.x1Edit)
+		h2boxLayout.addWidget(y1)
+		h2boxLayout.addWidget(self.y1Edit)
+		h2boxLayout.addWidget(x2)
+		h2boxLayout.addWidget(self.x2Edit)
+		h2boxLayout.addWidget(y2)
+		h2boxLayout.addWidget(self.y2Edit)
+		h2boxLayout.addStretch()
+
+		h3boxLayout = QHBoxLayout()
+		h3boxLayout.addStretch()
+		# h3boxLayout.addWidget(x2)
+		# h3boxLayout.addWidget(self.x2Edit)
+		# h3boxLayout.addWidget(y2)
+		# h3boxLayout.addWidget(self.y2Edit)
+		h3boxLayout.addStretch()
+
+		h4boxLayout = QHBoxLayout()
+		h4boxLayout.addStretch()
+		h4boxLayout.addWidget(OkBtn)
+		h4boxLayout.addWidget(CancelBtn)
+		h4boxLayout.addStretch()
+
+		mainLayout = QVBoxLayout()
+		mainLayout.addLayout(h1boxLayout)
+		mainLayout.addLayout(h2boxLayout)
+		mainLayout.addLayout(h3boxLayout)
+		mainLayout.addLayout(h4boxLayout)
+		
+		self.setLayout(mainLayout)
+		self.exec()
+
+	def clickOK(self):
+		self.params['id'] = int(self.idEdit.text())
+		self.params['x1'] = int(self.x1Edit.text())
+		self.params['y1'] = int(self.y1Edit.text())
+		self.params['x2'] = int(self.x2Edit.text())
+		self.params['y2'] = int(self.y2Edit.text())
+		self.close()
+
+	def clickCancel(self):
+		self.close()
+
+	def getAlgorithm(self, text):
+		self.params['algorithm'] = text
 
 
