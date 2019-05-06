@@ -303,8 +303,9 @@ class MainWindow(QMainWindow):
 			# TODO: judge if point valid
 			params = {}
 			win = PUWGetLineSettings(params, self)
+			# print(params)
 			if params:
-				self.canvas.newLine(self.curColor, p1=params['p1'], p2=params['p2'])
+				self.canvas.newLine(self.curColor, p1=params['p1'], p2=params['p2'], algorithm=params['algorithm'])
 		else:
 			self.popUpMsgOneKey("Should create a canvas before drawing a line.")
 	
@@ -323,7 +324,7 @@ class MainWindow(QMainWindow):
 			params = {}
 			win = PUWGetEllipseSettings(params, self)
 			if params:
-				self.canvas.newEllipse(self.curColor, rCenter=params['center'], rx=params['rx'], ry=params['ry'])
+				self.canvas.newEllipse(self.curColor, rCenter=params['center'], rx=params['rx'], ry=params['ry'], algorithm=params['algorithm'])
 		else:
 			self.popUpMsgOneKey("Should create a canvas before drawing a ellipse.")
 

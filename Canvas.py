@@ -11,6 +11,7 @@ class Element(QLabel):
 	def __init__(self, canvas, pType, pColor, pId=None, *args, **kwargs):
 		if pType not in self.ElementsTypes:
 			raise RuntimeError('Invalid element type: {}'.format(pType))
+		super(Element, self).__init__()
 		self.type = pType
 		self.color = pColor
 		self.id = pId
@@ -21,22 +22,22 @@ class Element(QLabel):
 		self.hasObject = False
 		self.object = None
 		self.createObj()
-		print("Create new {0} with id={1}".format(self.type, self.id))
+		if self.hasObject:
+			print("Create new {0} with id={1}".format(self.type, self.id))
 	
 	def createObj(self):
 		if not self.hasObject:
 			if self.type=='Line':
-				self.object = Line(self.kwargs['p1'], self.kwargs['p2'])
+				self.object = Line(self.kwargs['p1'], self.kwargs['p2'], self.kwargs['algorithm'])
 			elif self.type=='Polygon':
 				self.object = Polygon()
 			elif self.type=='Ellipse':
-				self.object = Ellipse(self.kwargs['rCenter'], self.kwargs['rx'], self.kwargs['ry'])
+				self.object = Ellipse(self.kwargs['rCenter'], self.kwargs['rx'], self.kwargs['ry'], self.kwargs['algorithm'])
 			elif self.type=='Curve':
 				self.object = Curve()
 			else:
 				raise RuntimeError('Invalid element type: {}'.format(self.type))
-			self.hasObject = True
-			self.paintEvent()
+			self.hasObject = self.paintEvent()
 		else:
 			raise RuntimeError("Already created an object within current element.")
 
@@ -44,28 +45,68 @@ class Element(QLabel):
 		qp = QPainter(self.canvas.pixmap())
 		qp.setPen(QPen(self.color))
 		qp.setBrush(QBrush(self.color))
-		self.object.draw(qp)
+		drawRes = self.object.draw(qp)
 		self.canvas.update()
+		qp.end()
+		return drawRes
+
 
 
 # Line
 class Line(QLabel):
 	### BUG!!!!
-	def __init__(self, p1=QPoint(100, 100), p2=QPoint(200, 200)):
+	def __init__(self, p1=QPoint(100, 100), p2=QPoint(200, 200), algorithm='DDA'):
 		super(Line, self).__init__()
 		self.p1 = p1
 		self.p2 = p2
-		# self.
+		self.algorithm = algorithm
+		self.qpainter = None
 
-	def draw(self, qp, algorithm='DDA'):
+	def draw(self, qp):
 		# TODO: self-implement algorithms
-		qp.drawPath(self.getPath())
-
-	def getPath(self):
+		self.qpainter = qp
 		self.path = QPainterPath()
 		self.path.moveTo(self.p1)
-		self.path.lineTo(self.p2)
-		return self.path
+		if self.algorithm == 'DDA':
+			return self.DDA()
+		elif self.algorithm == 'Bresenham':
+			return self.Bresenham()
+		else:
+			print("Can't draw! Unknown algorithm.")
+			return False
+		# vs standard
+		# qp.setPen(QPen(Qt.red))
+		# qp.drawPath(self.getPath())
+
+	# def getPath(self):
+	# 	self.path = QPainterPath()
+	# 	self.path.moveTo(self.p1)
+	# 	self.path.lineTo(self.p2)
+	# 	return self.path
+
+	def DDA(self):
+		x1, y1 = self.p1.x(), self.p1.y()
+		x2, y2 = self.p2.x(), self.p2.y()
+		point_arr = []
+		dx, dy = x2-x1, y2-y1
+		e = abs(dx) if abs(dx)>abs(dy) else abs(dy)
+		dx /= e
+		dy /= e
+		x, y = x1, y1
+		# calc points
+		for i in range(e):
+			# print((x, y))
+			point_arr.append(QPoint(int(x+0.5), int(y+0.5)))
+			x += dx
+			y += dy
+		# draw
+		for p in point_arr:
+			self.qpainter.drawPoint(p)
+		return True
+
+	def Bresenham(self):
+		print("Bresenham algorithm to be implemented.")
+		return False
 
 
 # Polygon
@@ -152,8 +193,11 @@ class Canvas(QLabel):
 	def createElement(self, pType, pColor, pId=None, *args, **kwargs):
 		# check Id
 		self.checkIdValid(pId)
-		self.allElements[self.curId] = Element(self, pType=pType, pColor=pColor, pId=self.curId, *args, **kwargs)
+		newElem = Element(self, pType=pType, pColor=pColor, pId=self.curId, *args, **kwargs)
+		if newElem.hasObject:
+			self.allElements[self.curId] = newElem
 		print(self.allElements.keys())
+
 
 	@property
 	def curElement(self):

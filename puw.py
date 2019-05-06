@@ -8,6 +8,7 @@ class PUWGetCanvasSize(QDialog):
 	def __init__(self, params, parent=None):
 		super(PUWGetCanvasSize, self).__init__(parent)
 		self.params = params
+		self.algorithm = None
 		self.initUI()
 
 	def initUI(self):
@@ -52,7 +53,7 @@ class PUWGetLineSettings(QDialog):
 	def __init__(self, params, parent=None):
 		super(PUWGetLineSettings, self).__init__(parent)
 		self.params = params
-		self.params['algorithm'] = 'DDA'
+		self.algorithm = "DDA"
 		self.initUI()
 
 	def initUI(self):
@@ -126,13 +127,14 @@ class PUWGetLineSettings(QDialog):
 	def clickOK(self):
 		self.params['p1'] = QPoint(int(self.x1Edit.text()), int(self.y1Edit.text()))
 		self.params['p2'] = QPoint(int(self.x2Edit.text()), int(self.y2Edit.text()))
+		self.params['algorithm'] = self.algorithm
 		self.close()
 		
 	def clickCancel(self):
 		self.close()
 
 	def getAlgorithm(self, text):
-		self.params['algorithm'] = text
+		self.algorithm = text
 
 
 
@@ -140,7 +142,7 @@ class PUWGetEllipseSettings(QDialog):
 	def __init__(self, params, parent=None):
 		super(PUWGetEllipseSettings, self).__init__(parent)
 		self.params = params
-		self.params['algorithm'] = 'Midpoint-circle'
+		self.algorithm = "Midpoint-circle"
 		self.initUI()
 
 	def initUI(self):
@@ -215,13 +217,14 @@ class PUWGetEllipseSettings(QDialog):
 		self.params['center'] = QPoint(int(self.xEdit.text()), int(self.yEdit.text()))
 		self.params['rx'] = int(self.rxEdit.text())
 		self.params['ry'] = int(self.ryEdit.text())
+		self.params['algorithm'] = self.algorithm
 		self.close()
 
 	def clickCancel(self):
 		self.close()
 
 	def getAlgorithm(self, text):
-		self.params['algorithm'] = text
+		self.algorithm = text
 
 
 class PUWGetTranslateSettings(QDialog):
@@ -438,7 +441,7 @@ class PUWGetClipLineSettings(QDialog):
 	def __init__(self, params, parent=None):
 		super(PUWGetClipLineSettings, self).__init__(parent)
 		self.params = params
-		self.params['algorithm'] = 'Cohen-Sutherland'
+		self.algorithm = "Cohen-Sutherland"
 		self.initUI()
 
 	def initUI(self):
@@ -496,14 +499,6 @@ class PUWGetClipLineSettings(QDialog):
 		h2boxLayout.addWidget(self.y2Edit)
 		h2boxLayout.addStretch()
 
-		h3boxLayout = QHBoxLayout()
-		h3boxLayout.addStretch()
-		# h3boxLayout.addWidget(x2)
-		# h3boxLayout.addWidget(self.x2Edit)
-		# h3boxLayout.addWidget(y2)
-		# h3boxLayout.addWidget(self.y2Edit)
-		h3boxLayout.addStretch()
-
 		h4boxLayout = QHBoxLayout()
 		h4boxLayout.addStretch()
 		h4boxLayout.addWidget(OkBtn)
@@ -513,7 +508,6 @@ class PUWGetClipLineSettings(QDialog):
 		mainLayout = QVBoxLayout()
 		mainLayout.addLayout(h1boxLayout)
 		mainLayout.addLayout(h2boxLayout)
-		mainLayout.addLayout(h3boxLayout)
 		mainLayout.addLayout(h4boxLayout)
 		
 		self.setLayout(mainLayout)
@@ -525,12 +519,13 @@ class PUWGetClipLineSettings(QDialog):
 		self.params['y1'] = int(self.y1Edit.text())
 		self.params['x2'] = int(self.x2Edit.text())
 		self.params['y2'] = int(self.y2Edit.text())
+		self.params['algorithm'] = self.algorithm
 		self.close()
 
 	def clickCancel(self):
 		self.close()
 
 	def getAlgorithm(self, text):
-		self.params['algorithm'] = text
+		self.algorithm = text
 
 
