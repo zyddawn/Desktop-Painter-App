@@ -11,25 +11,45 @@ class Line(QLabel):
 		self.algorithm = algorithm
 		self.qpainter = None
 		self.point_arr = []
+		self.old_point_arr = []
+		self._params = {"point1": (self.p1.x(), self.p1.y()), 
+						"point2": (self.p2.x(), self.p2.y()), "algorithm": self.algorithm}
 
-	def draw(self, qp):
+	@property
+	def params(self):
+		return self._params
+
+	def updatePoints(self, newArr):
+		self.old_point_arr = self.point_arr[:]
+		self.point_arr = newArr
+
+	def draw(self, qp, color=None):
 		self.qpainter = qp
 		self.path = QPainterPath()
 		self.path.moveTo(self.p1)
 		# vs qt standard
-		self.qpainter.setPen(QPen(Qt.red))
-		self.qpainter.drawPath(self.getPath())
-		self.qpainter.setPen(QPen(Qt.black))
+		# self.qpainter.setPen(QPen(Qt.red))
+		# self.qpainter.drawPath(self.getPath())
 		Res = True
 		if self.algorithm == 'DDA':
-			Res = self.DDA()
+			self.DDA()
 		elif self.algorithm == 'Midpoint':
-			Res = self.Midpoint()
+			self.Midpoint()
 		elif self.algorithm == 'Bresenham':
-			Res = self.Bresenham()
+			self.Bresenham()
 		else:
 			print("Can't draw! Unknown algorithm.")
 			Res = False
+		if Res:
+			self.qpainter.setPen(QPen(Qt.white))	# erase old element
+			for p in self.old_point_arr:
+				self.qpainter.drawPoint(p)
+			if color:
+				self.qpainter.setPen(QPen(color))
+			else:
+				self.qpainter.setPen(QPen(Qt.black))
+			for p in self.point_arr:
+				self.qpainter.drawPoint(p)
 		return Res
 		
 	def getPath(self):
@@ -39,9 +59,10 @@ class Line(QLabel):
 		return self.path
 
 	def DDA(self):
+		if len(self.point_arr)>0:
+			return ;
 		x1, y1 = self.p1.x(), self.p1.y()
 		x2, y2 = self.p2.x(), self.p2.y()
-		self.point_arr = []
 		dx, dy = x2-x1, y2-y1
 		e = abs(dx) if abs(dx)>abs(dy) else abs(dy)
 		dx = dx*1.0 / e
@@ -52,15 +73,12 @@ class Line(QLabel):
 			self.point_arr.append(QPoint(int(x+0.5), int(y+0.5)))
 			x += dx
 			y += dy
-		# draw
-		for p in self.point_arr:
-			self.qpainter.drawPoint(p)
-		return True
 
 	def Midpoint(self):
+		if len(self.point_arr)>0:
+			return ;
 		x1, y1 = self.p1.x(), self.p1.y()
 		x2, y2 = self.p2.x(), self.p2.y()
-		self.point_arr = []
 		if x1==x2:	# when k is inf
 			k = 100.0*(y2-y1)
 		else: 
@@ -118,15 +136,12 @@ class Line(QLabel):
 					else:
 						y, d = y+1, d+delta1
 					self.point_arr.append(QPoint(x, y))
-		# draw
-		for p in self.point_arr:
-			self.qpainter.drawPoint(p)
-		return True
-
+		
 	def Bresenham(self):
+		if len(self.point_arr)>0:
+			return ;
 		x1, y1 = self.p1.x(), self.p1.y()
 		x2, y2 = self.p2.x(), self.p2.y()
-		self.point_arr = []
 		if x1==x2:	# when k is inf
 			k = 100.0*(y2-y1)
 		else: 
@@ -161,7 +176,7 @@ class Line(QLabel):
 			x, y = x1, y1
 			dx, dy = x2-x1, y2-y1
 			if k > 0: # dx>0, dy>0
-				print("Case 3")
+				# print("Case 3")
 				p = 2*dx - dy
 				while y <= y2:
 					self.point_arr.append(QPoint(x, y))
@@ -170,7 +185,7 @@ class Line(QLabel):
 					else:
 						x, y, p = x+1, y+1, p+2*(dx-dy)
 			else: # dx<0, dy>0
-				print("Case 4")
+				# print("Case 4")
 				p = -2*dx - dy
 				while y <= y2:
 					self.point_arr.append(QPoint(x, y))
@@ -178,12 +193,7 @@ class Line(QLabel):
 						y, p = y+1, p-2*dx
 					else:
 						x, y, p = x-1, y+1, p-2*(dx+dy)
-		# draw 	
-		for p in self.point_arr:
-			self.qpainter.drawPoint(p)
-		return True
-
-
+		
 
 
 

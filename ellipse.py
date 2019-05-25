@@ -11,30 +11,49 @@ class Ellipse(QLabel):
 		self.algorithm = algorithm
 		self.qpainter = None
 		self.point_arr = []
+		self.old_point_arr = []
+		self._params = {"rCenter": (self.rCenter.x(), self.rCenter.y()), \
+						"rx": self.a, "ry": self.b, "algorithm": self.algorithm}
 
-	def draw(self, qp):
+	@property
+	def params(self):
+		return self._params
+
+	def updatePoints(self, newArr):
+		self.old_point_arr = self.point_arr[:]
+		self.point_arr = newArr
+
+	def draw(self, qp, color=None):
 		self.qpainter = qp
 		# vs qt standard
-		self.qpainter.setPen(QPen(Qt.red))
-		self.qpainter.drawEllipse(self.rCenter, self.a, self.b)
-		self.qpainter.setPen(QPen(Qt.black))
+		# self.qpainter.setPen(QPen(Qt.red))
+		# self.qpainter.drawEllipse(self.rCenter, self.a, self.b)	 
 		Res = True
 		if self.algorithm == 'Midpoint-circle':
-			Res = self.MidPointCircle()
+			self.MidPointCircle()
 		else:
 			print("Can't draw! Unknown algorithm.")
 			Res = False
+		if Res:
+			self.qpainter.setPen(QPen(Qt.white))	# erase old element
+			for p in self.old_point_arr:
+				self.qpainter.drawPoint(p)
+			if color:
+				self.qpainter.setPen(QPen(color))
+			else:
+				self.qpainter.setPen(QPen(Qt.black))
+			for p in self.point_arr:
+				self.qpainter.drawPoint(p)
 		return Res
 
 	def MidPointCircle(self):
 		# TODO
+		if len(self.point_arr)>0:
+			return ;
 		self.getFirstQuadrant()
 		self.getSecondQuadrant()
 		self.getThirdQuadrant()
 		self.getFourthQuadrant()
-		for p in self.point_arr:
-			self.qpainter.drawPoint(p)
-		return True
 
 	def getFirstQuadrant(self):
 		x0, y0 = self.rCenter.x(), self.rCenter.y()

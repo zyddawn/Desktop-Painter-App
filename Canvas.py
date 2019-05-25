@@ -43,8 +43,14 @@ class Canvas(QLabel):
 		newElem = Element(self, pType=pType, pColor=pColor, pId=self.curId, *args, **kwargs)
 		if newElem.hasObject:
 			self.allElements[self.curId] = newElem
-		print(self.allElements.keys())
+		# print(newElem)
 
+	def getElement(self, Id):
+		if Id in self.allElements.keys():
+			return self.allElements[Id]
+		else:
+			print("No element with id={}!".format(Id))
+			return None
 
 	@property
 	def curElement(self):

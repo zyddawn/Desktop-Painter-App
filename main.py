@@ -8,6 +8,7 @@ import os
 from canvas import *
 from puw import *
 from time import *
+import transform as tm
 
 iconPath = './Icons'
 imageTypes = ['.bmp', '.png', '.jpeg']
@@ -345,8 +346,10 @@ class MainWindow(QMainWindow):
 					if params['id'] not in self.canvas.allElements.keys():
 						self.popUpMsgOneKey("Element id doesn't exist!")
 					else:
-						# TODO
-						pass
+						elem = self.canvas.getElement(params['id'])
+						tm.translate(elem, params['dx'], params['dy'])
+						print("Translate (id={}, type={}) with (dx={}, dy={})"\
+								.format(elem.id, elem.type, params['dx'], params['dy']))
 			else:
 				self.popUpMsgOneKey("Should create a element first before translating it.")
 		else:
@@ -361,8 +364,12 @@ class MainWindow(QMainWindow):
 					if params['id'] not in self.canvas.allElements.keys():
 						self.popUpMsgOneKey("Element id doesn't exist!")
 					else:
-						# TODO
-						pass
+						elem = self.canvas.getElement(params['id'])
+						# if elem.type == 'Ellipse':
+						# 	print("Cannot rotate ellipse!")
+						tm.rotate(elem, params['x'], params['y'], params['angle'])
+						print("Rotate (id={}, type={}) with (cx={}, cy={}, angle={})"\
+								.format(elem.id, elem.type, params['x'], params['y'], params['angle']))
 			else:
 				self.popUpMsgOneKey("Should create a element first before rotating it.")
 		else:

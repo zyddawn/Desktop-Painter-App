@@ -24,8 +24,16 @@ class Element(QLabel):
 		self.object = None
 		self.createObj()
 		if self.hasObject:
-			print("Create new {0} with id={1}".format(self.type, self.id))
+			# print("Create new {0} with id={1}".format(self.type, self.id))
+			print("New Element: {}".format(self))
 			pass
+
+	def __repr__(self):
+		if self.hasObject:
+			attributes = {"ID": self.id, "type": self.type, **self.object.params}
+			return str(attributes)
+		else:
+			return None
 	
 	def createObj(self):
 		if not self.hasObject:
@@ -43,11 +51,16 @@ class Element(QLabel):
 		else:
 			raise RuntimeError("Already created an object within current element.")
 
+	def updatePoints(self, newArr):
+		self.object.updatePoints(newArr)
+		self.hasObject = self.paintEvent()
+		self.canvas.update()
+
 	def paintEvent(self):
 		qp = QPainter(self.canvas.pixmap())
-		qp.setPen(QPen(self.color))
+		# qp.setPen(QPen(self.color))
 		# qp.setBrush(QBrush(self.color))
-		drawRes = self.object.draw(qp)
+		drawRes = self.object.draw(qp, color=self.color)
 		self.canvas.update()
 		qp.end()
 		return drawRes
