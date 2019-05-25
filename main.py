@@ -384,8 +384,10 @@ class MainWindow(QMainWindow):
 					if params['id'] not in self.canvas.allElements.keys():
 						self.popUpMsgOneKey("Element id doesn't exist!")
 					else:
-						# TODO
-						pass
+						elem = self.canvas.getElement(params['id'])
+						tm.scale(elem, params['x'], params['y'], params['scale'])
+						print("Scale (id={}, type={}) with (cx={}, cy={}, scale={})"\
+								.format(elem.id, elem.type, params['x'], params['y'], params['scale']))
 			else:
 				self.popUpMsgOneKey("Should create a element first before scaling it.")
 		else:

@@ -27,6 +27,18 @@ def rotate(elem, cx, cy, angle):
 	elem.updatePoints(point_arr)
 
 
+def scale(elem, cx, cy, portion):
+	TM1 = np.matrix([[1,0,0],[0,1,0],[-cx,-cy,1]])
+	TM2 = np.matrix([[1,0,0],[0,1,0],[cx,cy,1]])
+	SM = np.matrix([[portion, 0, 0],
+					[0, portion, 0],
+					[0, 0, 1]])
+	point_arr = []
+	for p in elem.object.point_arr:
+		a = np.array([p.x(), p.y(), 1])
+		x,y,_ = np.array(a*TM1*SM*TM2)[0]
+		point_arr.append(QPoint(x,y))
+	elem.updatePoints(point_arr)
 
 
 

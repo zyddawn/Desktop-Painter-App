@@ -371,7 +371,7 @@ class PUWGetScaleSettings(QDialog):
 
 	def initUI(self):
 		self.setFixedSize(280, 180)
-		self.setWindowTitle("Rotate settings")
+		self.setWindowTitle("Scale settings")
 		Id = QLabel("Id")
 		x = QLabel("Center x")
 		y = QLabel("Center y")
