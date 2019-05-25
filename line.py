@@ -19,9 +19,17 @@ class Line(QLabel):
 	def params(self):
 		return self._params
 
+	def setP1(self, newP):
+		self.p1 = newP
+
+	def setP2(self, newP):
+		self.p2 = newP
+
 	def updatePoints(self, newArr):
 		self.old_point_arr = self.point_arr[:]
 		self.point_arr = newArr
+		if len(self.point_arr) > 0:
+			self.p1, self.p2 = self.point_arr[0], self.point_arr[-1]
 
 	def getPoints(self):
 		Res = True
@@ -43,6 +51,8 @@ class Line(QLabel):
 		x2, y2 = self.p2.x(), self.p2.y()
 		dx, dy = x2-x1, y2-y1
 		e = abs(dx) if abs(dx)>abs(dy) else abs(dy)
+		if e == 0:
+			return ;
 		dx = dx*1.0 / e
 		dy = dy*1.0 / e
 		x, y = x1, y1

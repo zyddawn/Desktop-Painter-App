@@ -151,7 +151,7 @@ class MainWindow(QMainWindow):
 
 		clipLineAct = QAction(QIcon(os.path.join(iconPath, 'icons8-scissors-64.png')), 'Clip line', self)
 		clipLineAct.setStatusTip('Clip line')
-		clipLineAct.triggered.connect(self.clipLine)
+		clipLineAct.triggered.connect(self.lineClip)
 
 		self.toolbar.addAction(newLineAct)
 		self.toolbar.addAction(newPolygonAct)
@@ -395,7 +395,7 @@ class MainWindow(QMainWindow):
 		else:
 			self.popUpMsgOneKey("Should create a canvas before scaling elements.")
 
-	def clipLine(self):
+	def lineClip(self):
 		if self.canvas.hasCanvas:
 			params = {}
 			win = PUWGetClipLineSettings(params, self)
@@ -405,8 +405,15 @@ class MainWindow(QMainWindow):
 				elif self.canvas.allElements[params['id']].type is not "Line":
 					self.popUpMsgOneKey("The selected element is not a line!")
 				else:
-					# TODO
-					pass
+					if params['x1']<params['x2'] and params['y1']<params['y2']:
+						lineElem = self.canvas.getElement(params['id'])
+						tm.lineClip(lineElem, QPoint(params['x1'], params['y1']), 
+								QPoint(params['x2'], params['y2']), params['algorithm'])
+						print("Clip line (id={}, type={}) within (lowerleft={}, upperright={}, algorithm={})"\
+								.format(lineElem.id, lineElem.type, (params['x1'], params['y1']), \
+										(params['x2'], params['y2']), params['algorithm']))
+					else:
+						self.popUpMsgOneKey("The given window is invalid!")
 		else:
 			self.popUpMsgOneKey("Should create a canvas before clipping lines.")
 
