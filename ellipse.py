@@ -28,44 +28,105 @@ class Ellipse(QLabel):
 
 	def MidPointCircle(self):
 		# TODO
-		self.getFirstQuarter()
-		self.getSecondQuarter()
-		self.getThirdQuarter()
-		self.getFourthQuarter()
+		self.getFirstQuadrant()
+		self.getSecondQuadrant()
+		self.getThirdQuadrant()
+		self.getFourthQuadrant()
 		for p in self.point_arr:
 			self.qpainter.drawPoint(p)
 		return True
 
-	def getFirstQuarter(self):
-		x, y = 0, self.b
-		d1 = self.b**2 + self.a**2*(-self.b+0.25)
+	def getFirstQuadrant(self):
+		x0, y0 = self.rCenter.x(), self.rCenter.y()
+		x, y = x0, y0+self.b
+		d1 = self.b**2 + self.a**2*(0.25-self.b)
 		self.point_arr.append(QPoint(x, y))
-		while self.b**2*(x+1) < self.a**2*(y-0.5):
+		while abs(self.b**2*(x-x0+1)) < abs(self.a**2*(y-y0-0.5)):
 			if d1 < 0:
-				d1 += self.b**2*(2*x+3)
+				d1 += self.b**2*(2*x-2*x0+3)
 				x += 1
 			else:
-				d1 += self.b**2*(2*x+3) + self.a**2*(-2*y+2)
+				d1 += self.b**2*(2*x-2*x0+3) + self.a**2*(-2*y+2*y0+2)
 				x, y = x+1, y-1
 			self.point_arr.append(QPoint(x, y))
-		d2 = (self.b*(x+0.5))**2 + (self.a*(y-1))**2 - (self.a*self.b)**2
-		while y > 0:
+		d2 = (self.b*(x-x0+0.5))**2 + (self.a*(y-y0-1))**2 - (self.a*self.b)**2
+		while y > y0:
 			if d2 < 0:
-				d2 += self.b**2*(2*x+2) + self.a**2*(-2*y+3)
+				d2 += self.b**2*(2*x-2*x0+2) + self.a**2*(-2*y+2*y0+3)
 				x, y = x+1, y-1
 			else:
-				d2 += self.a**2*(-2*y+3)
+				d2 += self.a**2*(-2*y+2*y0+3)
 				y -= 1
 			self.point_arr.append(QPoint(x, y))
 
-	def getSecondQuarter(self):
-		pass
+	def getSecondQuadrant(self):
+		x0, y0 = self.rCenter.x(), self.rCenter.y()
+		x, y = x0, y0+self.b
+		d1 = self.b**2 + self.a**2*(0.25-self.b)
+		self.point_arr.append(QPoint(x, y))
+		while abs(self.b**2*(x-x0-1)) < abs(self.a**2*(y-y0-0.5)):
+			if d1 < 0:
+				d1 += self.b**2*(-2*x+2*x0+3)
+				x -= 1
+			else:
+				d1 += self.b**2*(-2*x+2*x0+3) + self.a**2*(-2*y+2*y0+2)
+				x, y = x-1, y-1
+			self.point_arr.append(QPoint(x, y))
+		d2 = (self.b*(x-x0-0.5))**2 + (self.a*(y-y0-1))**2 - (self.a*self.b)**2
+		while y > y0:
+			if d2 < 0:
+				d2 += self.b**2*(-2*x+2*x0+2) + self.a**2*(-2*y+2*y0+3)
+				x, y = x-1, y-1
+			else:
+				d2 += self.a**2*(-2*y+2*y0+3)
+				y -= 1
+			self.point_arr.append(QPoint(x, y))
 
-	def getThirdQuarter(self):
-		pass
+	def getThirdQuadrant(self):
+		x0, y0 = self.rCenter.x(), self.rCenter.y()
+		x, y = x0, y0-self.b
+		d1 = self.b**2 + self.a**2*(0.25-self.b)
+		self.point_arr.append(QPoint(x, y))
+		while abs(self.b**2*(x-x0-1)) < abs(self.a**2*(y-y0+0.5)):
+			if d1 < 0:
+				d1 += self.b**2*(-2*x+2*x0+3)
+				x -= 1
+			else:
+				d1 += self.b**2*(-2*x+2*x0+3) + self.a**2*(2*y-2*y0+2)
+				x, y = x-1, y+1
+			self.point_arr.append(QPoint(x, y))
+		d2 = (self.b*(x-x0-0.5))**2 + (self.a*(y-y0+1))**2 - (self.a*self.b)**2
+		while y <= y0:
+			if d2 < 0:
+				d2 += self.b**2*(-2*x+2*x0+2) + self.a**2*(2*y-2*y0+3)
+				x, y = x-1, y+1
+			else:
+				d2 += self.a**2*(2*y-2*y0+3)
+				y += 1
+			self.point_arr.append(QPoint(x, y))
 
-	def getFourthQuarter(self):
-		pass
+	def getFourthQuadrant(self):
+		x0, y0 = self.rCenter.x(), self.rCenter.y()
+		x, y = x0, y0-self.b
+		d1 = self.b**2 + self.a**2*(0.25-self.b)
+		self.point_arr.append(QPoint(x, y))
+		while abs(self.b**2*(x-x0+1)) < abs(self.a**2*(y-y0+0.5)):
+			if d1 < 0:
+				d1 += self.b**2*(2*x-2*x0+3)
+				x += 1
+			else:
+				d1 += self.b**2*(2*x-2*x0+3) + self.a**2*(2*y-2*y0+2)
+				x, y = x+1, y+1
+			self.point_arr.append(QPoint(x, y))
+		d2 = (self.b*(x-x0+0.5))**2 + (self.a*(y-y0+1))**2 - (self.a*self.b)**2
+		while y <= y0:
+			if d2 < 0:
+				d2 += self.b**2*(2*x-2*x0+2) + self.a**2*(2*y-2*y0+3)
+				x, y = x+1, y+1
+			else:
+				d2 += self.a**2*(2*y-2*y0+3)
+				y += 1
+			self.point_arr.append(QPoint(x, y))
 
 
 
