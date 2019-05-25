@@ -9,7 +9,7 @@ class Ellipse(QLabel):
 		self.a = rx
 		self.b = ry
 		self.algorithm = algorithm
-		self.qpainter = None
+		# self.qpainter = None
 		self.point_arr = []
 		self.old_point_arr = []
 		self._params = {"rCenter": (self.rCenter.x(), self.rCenter.y()), \
@@ -23,27 +23,13 @@ class Ellipse(QLabel):
 		self.old_point_arr = self.point_arr[:]
 		self.point_arr = newArr
 
-	def draw(self, qp, color=None):
-		self.qpainter = qp
-		# vs qt standard
-		# self.qpainter.setPen(QPen(Qt.red))
-		# self.qpainter.drawEllipse(self.rCenter, self.a, self.b)	 
+	def getPoints(self):
 		Res = True
 		if self.algorithm == 'Midpoint-circle':
 			self.MidPointCircle()
 		else:
 			print("Can't draw! Unknown algorithm.")
 			Res = False
-		if Res:
-			self.qpainter.setPen(QPen(Qt.white))	# erase old element
-			for p in self.old_point_arr:
-				self.qpainter.drawPoint(p)
-			if color:
-				self.qpainter.setPen(QPen(color))
-			else:
-				self.qpainter.setPen(QPen(Qt.black))
-			for p in self.point_arr:
-				self.qpainter.drawPoint(p)
 		return Res
 
 	def MidPointCircle(self):

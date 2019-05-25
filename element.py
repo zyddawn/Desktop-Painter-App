@@ -40,7 +40,7 @@ class Element(QLabel):
 			if self.type=='Line':
 				self.object = Line(self.kwargs['p1'], self.kwargs['p2'], self.kwargs['algorithm'])
 			elif self.type=='Polygon':
-				self.object = Polygon()
+				self.object = Polygon(self.kwargs['points'], self.kwargs['algorithm'])
 			elif self.type=='Ellipse':
 				self.object = Ellipse(self.kwargs['rCenter'], self.kwargs['rx'], self.kwargs['ry'], self.kwargs['algorithm'])
 			elif self.type=='Curve':
@@ -60,10 +60,19 @@ class Element(QLabel):
 		qp = QPainter(self.canvas.pixmap())
 		# qp.setPen(QPen(self.color))
 		# qp.setBrush(QBrush(self.color))
-		drawRes = self.object.draw(qp, color=self.color)
-		self.canvas.update()
-		qp.end()
-		return drawRes
+		if self.getPoints():
+			qp.setPen(QPen(Qt.white))	# erase old element
+			for p in self.object.old_point_arr:
+				qp.drawPoint(p)
+			qp.setPen(QPen(self.color))
+			for p in self.object.point_arr:
+				qp.drawPoint(p)
+			self.canvas.update()
+			qp.end()
+			return True
+		return False
 
+	def getPoints(self):
+		return self.object.getPoints()
 
 

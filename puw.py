@@ -138,6 +138,114 @@ class PUWGetLineSettings(QDialog):
 		self.algorithm = text
 
 
+class PUWGetPolygonSettings(QDialog):
+	def __init__(self, params, parent=None):
+		super(PUWGetPolygonSettings, self).__init__(parent)
+		self.params = params
+		self.algorithm = "Bresenham"
+		self.pointNumber = 100
+		self.initUI()
+
+	def initUI(self):
+		self.setFixedSize(350, 320)
+		self.setWindowTitle("Curve settings")
+		x = QLabel("x")
+		y = QLabel("y")
+		n = QLabel("n")
+		cpTitle = QLabel("Current Points: ")
+		self.cpList = QLabel("")
+		self.xEdit = QLineEdit()
+		self.yEdit = QLineEdit()
+		self.nEdit = QLineEdit()
+		self.xEdit.setFixedWidth(60)
+		self.yEdit.setFixedWidth(60)
+		self.nEdit.setFixedWidth(30)
+		self.xEdit.setText(str(random.randint(200, 900)))
+		self.yEdit.setText(str(random.randint(200, 450)))
+		self.nEdit.setText("5")
+		self.algorithmChoice = QComboBox(self)
+		self.algorithmChoice.addItem("Bresenham")
+		self.algorithmChoice.addItem("DDA")
+		self.algorithmChoice.activated[str].connect(self.getAlgorithm)
+		OkBtn = QPushButton("OK")
+		OkBtn.clicked.connect(self.clickOK)
+		OkBtn.setShortcut("Enter")
+		OkBtn.setAutoDefault(True)
+		OkBtn.setDefault(True)
+		CancelBtn = QPushButton("Cancel")
+		CancelBtn.clicked.connect(self.clickCancel)
+		CancelBtn.setAutoDefault(False)
+		AddBtn = QPushButton("Add")
+		AddBtn.clicked.connect(self.clickAdd)
+		
+		h1boxLayout = QHBoxLayout()
+		h1boxLayout.addStretch()
+		h1boxLayout.addWidget(x)
+		h1boxLayout.addWidget(self.xEdit)
+		h1boxLayout.addWidget(y)
+		h1boxLayout.addWidget(self.yEdit)
+		h1boxLayout.addWidget(AddBtn)
+		h1boxLayout.addStretch()
+
+		h2boxLayout = QHBoxLayout()
+		h2boxLayout.addStretch()
+		# h2boxLayout.addWidget(cpTitle)
+		h2boxLayout.addWidget(self.cpList)
+		h2boxLayout.addStretch()
+
+		h3boxLayout = QHBoxLayout()
+		h3boxLayout.addStretch()
+		h3boxLayout.addWidget(n)
+		h3boxLayout.addWidget(self.nEdit)
+		h3boxLayout.addWidget(QLabel("Algorithm"))
+		h3boxLayout.addWidget(self.algorithmChoice)
+		h3boxLayout.addStretch()
+
+		h4boxLayout = QHBoxLayout()
+		h4boxLayout.addStretch()
+		h4boxLayout.addWidget(OkBtn)
+		h4boxLayout.addWidget(CancelBtn)
+		h4boxLayout.addStretch()
+
+		h5boxLayout = QHBoxLayout()
+		h5boxLayout.addStretch()
+		h5boxLayout.addWidget(cpTitle)
+		h5boxLayout.addStretch()
+
+		mainLayout = QVBoxLayout()
+		mainLayout.addLayout(h1boxLayout)
+		mainLayout.addLayout(h3boxLayout)
+		mainLayout.addLayout(h5boxLayout)
+		mainLayout.addLayout(h2boxLayout)
+		mainLayout.addLayout(h4boxLayout)
+		
+		self.setLayout(mainLayout)
+		self.exec()
+
+	def clickAdd(self):
+		self.pointNumber = int(self.nEdit.text())
+		x, y = int(self.xEdit.text()), int(self.yEdit.text())
+		if 'points' not in self.params.keys() and self.pointNumber > 0:
+			self.params['points'] = [(x, y), ]
+		elif self.pointNumber > len(self.params['points']):
+			self.params['points'].append((x, y))
+		# set text
+		self.cpList.setWordWrap(True)
+		self.cpList.setText(str(self.params['points']))
+		self.adjustSize()
+
+	def clickOK(self):
+		if 'points' in self.params.keys():
+			self.params['algorithm'] = self.algorithm
+		self.close()
+
+	def clickCancel(self):
+		self.close()
+		
+	def getAlgorithm(self, text):
+		self.algorithm = text
+
+
 
 class PUWGetEllipseSettings(QDialog):
 	def __init__(self, params, parent=None):
@@ -223,6 +331,114 @@ class PUWGetEllipseSettings(QDialog):
 	def clickCancel(self):
 		self.close()
 
+	def getAlgorithm(self, text):
+		self.algorithm = text
+
+
+class PUWGetCurveSettings(QDialog):
+	def __init__(self, params, parent=None):
+		super(PUWGetCurveSettings, self).__init__(parent)
+		self.params = params
+		self.algorithm = "Bezier"
+		self.pointNumber = 100
+		self.initUI()
+
+	def initUI(self):
+		self.setFixedSize(350, 320)
+		self.setWindowTitle("Curve settings")
+		x = QLabel("x")
+		y = QLabel("y")
+		n = QLabel("n")
+		cpTitle = QLabel("Current Points: ")
+		self.cpList = QLabel("")
+		self.xEdit = QLineEdit()
+		self.yEdit = QLineEdit()
+		self.nEdit = QLineEdit()
+		self.xEdit.setFixedWidth(60)
+		self.yEdit.setFixedWidth(60)
+		self.nEdit.setFixedWidth(30)
+		self.xEdit.setText(str(random.randint(200, 900)))
+		self.yEdit.setText(str(random.randint(200, 450)))
+		self.nEdit.setText("5")
+		self.algorithmChoice = QComboBox(self)
+		self.algorithmChoice.addItem("Bezier")
+		self.algorithmChoice.addItem("B-spline")
+		self.algorithmChoice.activated[str].connect(self.getAlgorithm)
+		OkBtn = QPushButton("OK")
+		OkBtn.clicked.connect(self.clickOK)
+		OkBtn.setShortcut("Enter")
+		OkBtn.setAutoDefault(True)
+		OkBtn.setDefault(True)
+		CancelBtn = QPushButton("Cancel")
+		CancelBtn.clicked.connect(self.clickCancel)
+		CancelBtn.setAutoDefault(False)
+		AddBtn = QPushButton("Add")
+		AddBtn.clicked.connect(self.clickAdd)
+		
+		h1boxLayout = QHBoxLayout()
+		h1boxLayout.addStretch()
+		h1boxLayout.addWidget(x)
+		h1boxLayout.addWidget(self.xEdit)
+		h1boxLayout.addWidget(y)
+		h1boxLayout.addWidget(self.yEdit)
+		h1boxLayout.addWidget(AddBtn)
+		h1boxLayout.addStretch()
+
+		h2boxLayout = QHBoxLayout()
+		h2boxLayout.addStretch()
+		# h2boxLayout.addWidget(cpTitle)
+		h2boxLayout.addWidget(self.cpList)
+		h2boxLayout.addStretch()
+
+		h3boxLayout = QHBoxLayout()
+		h3boxLayout.addStretch()
+		h3boxLayout.addWidget(n)
+		h3boxLayout.addWidget(self.nEdit)
+		h3boxLayout.addWidget(QLabel("Algorithm"))
+		h3boxLayout.addWidget(self.algorithmChoice)
+		h3boxLayout.addStretch()
+
+		h4boxLayout = QHBoxLayout()
+		h4boxLayout.addStretch()
+		h4boxLayout.addWidget(OkBtn)
+		h4boxLayout.addWidget(CancelBtn)
+		h4boxLayout.addStretch()
+
+		h5boxLayout = QHBoxLayout()
+		h5boxLayout.addStretch()
+		h5boxLayout.addWidget(cpTitle)
+		h5boxLayout.addStretch()
+
+		mainLayout = QVBoxLayout()
+		mainLayout.addLayout(h1boxLayout)
+		mainLayout.addLayout(h3boxLayout)
+		mainLayout.addLayout(h5boxLayout)
+		mainLayout.addLayout(h2boxLayout)
+		mainLayout.addLayout(h4boxLayout)
+		
+		self.setLayout(mainLayout)
+		self.exec()
+
+	def clickAdd(self):
+		self.pointNumber = int(self.nEdit.text())
+		x, y = int(self.xEdit.text()), int(self.yEdit.text())
+		if 'points' not in self.params.keys() and self.pointNumber > 0:
+			self.params['points'] = [(x, y), ]
+		elif self.pointNumber > len(self.params['points']):
+			self.params['points'].append((x, y))
+		# set text
+		self.cpList.setWordWrap(True)
+		self.cpList.setText(str(self.params['points']))
+		self.adjustSize()
+
+	def clickOK(self):
+		if 'points' in self.params.keys():
+			self.params['algorithm'] = self.algorithm
+		self.close()
+
+	def clickCancel(self):
+		self.close()
+		
 	def getAlgorithm(self, text):
 		self.algorithm = text
 

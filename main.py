@@ -300,7 +300,6 @@ class MainWindow(QMainWindow):
 
 	def newLine(self):
 		if self.canvas.hasCanvas:
-			# TODO: implement algorithm choice
 			# TODO: judge if point valid
 			params = {}
 			win = PUWGetLineSettings(params, self)
@@ -312,15 +311,16 @@ class MainWindow(QMainWindow):
 	
 	def newPolygon(self):
 		if self.canvas.hasCanvas:
-			# TODO: implement input points
 			# TODO: judge if point valid
-			self.canvas.newPolygon(self.curColor)
+			params = {}
+			win = PUWGetPolygonSettings(params, self)
+			if params:
+				self.canvas.newPolygon(self.curColor, points=params['points'], algorithm=params['algorithm'])
 		else:
 			self.popUpMsgOneKey("Should create a canvas before drawing a polygon.")
 
 	def newEllipse(self):
 		if self.canvas.hasCanvas:
-			# TODO: implement algorithm choice
 			# TODO: judge if point valid
 			params = {}
 			win = PUWGetEllipseSettings(params, self)
@@ -331,9 +331,11 @@ class MainWindow(QMainWindow):
 
 	def newCurve(self):
 		if self.canvas.hasCanvas:
-			# TODO: implement algorithm choice
 			# TODO: judge if point valid
-			self.canvas.newCurve(self.curColor)
+			params = {}
+			win = PUWGetCurveSettings(params, self)
+			if params:
+				self.canvas.newCurve(self.curColor, points=params['points'], algorithm=params['algorithm'])
 		else:
 			self.popUpMsgOneKey("Should create a canvas before drawing a curve.")
 

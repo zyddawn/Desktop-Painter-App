@@ -101,14 +101,14 @@ class Canvas(QLabel):
 	def newLine(self, pColor, pId=None, *args, **kwargs):
 		self.createElement(pType='Line', pColor=pColor, pId=pId, *args, **kwargs)
 
-	def newPolygon(self, pColor, pId=None):
-		self.createElement(pType='Polygon', pColor=pColor, pId=pId)
+	def newPolygon(self, pColor, pId=None, *args, **kwargs):
+		self.createElement(pType='Polygon', pColor=pColor, pId=pId, *args, **kwargs)
 
 	def newEllipse(self, pColor, pId=None, *args, **kwargs):
 		self.createElement(pType='Ellipse', pColor=pColor, pId=pId, *args, **kwargs)
 
-	def newCurve(self, pColor, pId=None):
-		self.createElement(pType='Curve', pColor=pColor, pId=pId)
+	def newCurve(self, pColor, pId=None, *args, **kwargs):
+		self.createElement(pType='Curve', pColor=pColor, pId=pId, *args, **kwargs)
 
 
 

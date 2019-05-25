@@ -41,7 +41,9 @@ def scale(elem, cx, cy, portion):
 	elem.updatePoints(point_arr)
 
 
-
+def lineClip(line, x1, y1, x2, y2):
+	# To be implemented
+	pass
 
 
 

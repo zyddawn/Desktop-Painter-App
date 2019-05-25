@@ -4,12 +4,12 @@ from PyQt5.QtCore import *
 
 
 class Line(QLabel):
-	def __init__(self, p1=QPoint(100, 100), p2=QPoint(200, 200), algorithm='DDA'):
+	def __init__(self, p1=QPoint(100, 100), p2=QPoint(200, 200), algorithm='Bresenham'):
 		super(Line, self).__init__()
 		self.p1 = p1
 		self.p2 = p2
 		self.algorithm = algorithm
-		self.qpainter = None
+		# self.qpainter = None
 		self.point_arr = []
 		self.old_point_arr = []
 		self._params = {"point1": (self.p1.x(), self.p1.y()), 
@@ -23,13 +23,7 @@ class Line(QLabel):
 		self.old_point_arr = self.point_arr[:]
 		self.point_arr = newArr
 
-	def draw(self, qp, color=None):
-		self.qpainter = qp
-		self.path = QPainterPath()
-		self.path.moveTo(self.p1)
-		# vs qt standard
-		# self.qpainter.setPen(QPen(Qt.red))
-		# self.qpainter.drawPath(self.getPath())
+	def getPoints(self):
 		Res = True
 		if self.algorithm == 'DDA':
 			self.DDA()
@@ -40,23 +34,7 @@ class Line(QLabel):
 		else:
 			print("Can't draw! Unknown algorithm.")
 			Res = False
-		if Res:
-			self.qpainter.setPen(QPen(Qt.white))	# erase old element
-			for p in self.old_point_arr:
-				self.qpainter.drawPoint(p)
-			if color:
-				self.qpainter.setPen(QPen(color))
-			else:
-				self.qpainter.setPen(QPen(Qt.black))
-			for p in self.point_arr:
-				self.qpainter.drawPoint(p)
 		return Res
-		
-	def getPath(self):
-		self.path = QPainterPath()
-		self.path.moveTo(self.p1)
-		self.path.lineTo(self.p2)
-		return self.path
 
 	def DDA(self):
 		if len(self.point_arr)>0:
