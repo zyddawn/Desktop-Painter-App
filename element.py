@@ -46,7 +46,7 @@ class Element(QLabel):
 	def paintEvent(self):
 		qp = QPainter(self.canvas.pixmap())
 		qp.setPen(QPen(self.color))
-		qp.setBrush(QBrush(self.color))
+		# qp.setBrush(QBrush(self.color))
 		drawRes = self.object.draw(qp)
 		self.canvas.update()
 		qp.end()
