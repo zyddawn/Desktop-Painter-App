@@ -576,7 +576,7 @@ class PUWGetRotateSettings(QDialog):
 		self.params['id'] = int(self.idEdit.text())
 		self.params['x'] = int(self.xEdit.text())
 		self.params['y'] = int(self.yEdit.text())
-		self.params['angle'] = int(self.angleEdit.text())
+		self.params['angle'] = float(self.angleEdit.text())
 		self.close()
 
 	def clickCancel(self):

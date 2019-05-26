@@ -6,6 +6,11 @@ class OPs(object):
 	def __init__(self, cmds):
 		self._action = cmds[0]
 		self._params = cmds[1:]
+		for i in range(len(self._params)):
+			if self._params[i]=='#':
+				self._params = self._params[:i]
+				break
+		# print(self._params)
 
 	@property
 	def action(self):
@@ -31,8 +36,9 @@ def parseScript(path):
 			op_arr = []
 			for l in rl:
 				cmd = l.strip("\n\t").split(" ")
-				if '' in cmd:
-					cmd = cmd.remove('')
+				while '' in cmd:
+					cmd.remove('')
+				# print(cmd)
 				if cmd:
 					new_op = OPs(cmd)
 					op_arr.append(new_op)

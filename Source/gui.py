@@ -10,7 +10,7 @@ from puw import *
 from time import *
 import transform as tm
 
-iconPath = './Icons'
+iconPath = '../Icons'
 imageTypes = ['.bmp', '.png', '.jpeg']
 
 
@@ -219,7 +219,7 @@ class MainWindow(QMainWindow):
 		fileDlg = QFileDialog()
 		fileDlg.setFilter(fileDlg.filter() | QDir.Hidden)
 		fileDlg.setDefaultSuffix('bmp')
-		fileDlg.setDirectory("./Demos/")
+		fileDlg.setDirectory("../Demos/")
 		fileDlg.setAcceptMode(QFileDialog.AcceptOpen)
 		fileDlg.setNameFilters(['PBM (*.bmp)'])
 		if fileDlg.exec_() == QDialog.Accepted:
@@ -245,7 +245,7 @@ class MainWindow(QMainWindow):
 			fileDlg = QFileDialog()
 			fileDlg.setFilter(fileDlg.filter() | QDir.Hidden)
 			fileDlg.setDefaultSuffix('bmp')
-			fileDlg.setDirectory("./Demos/")
+			fileDlg.setDirectory("../Demos/")
 			fileDlg.setAcceptMode(QFileDialog.AcceptSave)
 			fileDlg.setNameFilters(['PBM (*.bmp)'])
 			# fileDlg.selectFile(strftime("%Y%m%d-%H%M%S.bmp")
@@ -419,8 +419,8 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
-	
-	print("sys.argv: {}".format(sys.argv))
+	print("GUI mode:")
+	# print("sys.argv: {}".format(sys.argv))
 	# args = parseArgs(sys.argv)
 	app = QApplication(sys.argv)
 	ex = MainWindow()

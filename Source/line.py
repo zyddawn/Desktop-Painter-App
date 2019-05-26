@@ -101,7 +101,7 @@ class Line(QLabel):
 		else:
 			(x1, x2) = (x1, x2) if y2>y1 else (x2, x1)
 			(y1, y2) = (y1, y2) if y2>y1 else (y2, y1)
-			point_arr.append(QPoint(x1, y1))
+			self.point_arr.append(QPoint(x1, y1))
 			a, b = y1-y2, x2-x1
 			x, y = x1, y1
 			if k > 0: # a<0, b>0

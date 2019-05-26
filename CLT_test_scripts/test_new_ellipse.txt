@@ -1,0 +1,4 @@
+resetCanvas 800 800   # set size
+setColor 29 176 184
+drawEllipse 0 400 400 100 60
+saveCanvas test_new_ellipse

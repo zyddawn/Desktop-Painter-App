@@ -61,8 +61,8 @@ class Canvas(QLabel):
 			if pId==self.nextId:
 				self.curId, self.nextId = self.nextId, self.nextId+1
 			elif pId<self.nextId:
-				if pId<0 or pId not in self.allElements.keys():
-					raise RuntimeError('Invalid primitive id: {}'.format(pId))
+				if pId<0 or pId in self.allElements.keys():
+					print('Invalid Id: {}'.format(pId))
 				else:
 					self.curId = pId
 			elif pId>self.nextId:
