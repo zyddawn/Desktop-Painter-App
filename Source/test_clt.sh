@@ -1,6 +1,9 @@
 if [ -f "clt.py" ]
 then
 	echo "Test CLT mode"
+
+	echo -e "\npython clt.py --path \"../CLT_test_scripts/res/\" --script \"../CLT_test_scripts/input.txt\""
+	python clt.py --path "../CLT_test_scripts/res/" --script "../CLT_test_scripts/input.txt"
 	
 	echo -e "\npython clt.py --path \"../CLT_test_scripts/res/\" --script \"../CLT_test_scripts/test_new_line.txt\""
 	python clt.py --path "../CLT_test_scripts/res/" --script "../CLT_test_scripts/test_new_line.txt"

@@ -24,16 +24,9 @@ class Ellipse(QLabel):
 		self.point_arr = newArr
 
 	def getPoints(self):
-		Res = True
-		if self.algorithm == 'Midpoint-circle':
-			self.MidPointCircle()
-		else:
-			print("Can't draw! Unknown algorithm.")
-			Res = False
-		return Res
-
+		self.MidPointCircle()
+		
 	def MidPointCircle(self):
-		# TODO
 		if len(self.point_arr)>0:
 			return ;
 		self.getFirstQuadrant()

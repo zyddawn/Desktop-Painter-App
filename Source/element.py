@@ -47,32 +47,32 @@ class Element(QLabel):
 				self.object = Curve()
 			else:
 				raise RuntimeError('Invalid element type: {}'.format(self.type))
-			self.hasObject = self.paintEvent()
+			self.paintEvent()
+			self.hasObject = True
 		else:
 			raise RuntimeError("Already created an object within current element.")
 
 	def updatePoints(self, newArr):
 		self.object.updatePoints(newArr)
-		self.hasObject = self.paintEvent()
+		self.paintEvent()
+		self.hasObject = True
 		self.canvas.update()
 
 	def paintEvent(self):
 		qp = QPainter(self.canvas.pixmap())
 		# qp.setPen(QPen(self.color))
 		# qp.setBrush(QBrush(self.color))
-		if self.getPoints():
-			qp.setPen(QPen(Qt.white))	# erase old element
-			for p in self.object.old_point_arr:
-				qp.drawPoint(p)
-			qp.setPen(QPen(self.color))
-			for p in self.object.point_arr:
-				qp.drawPoint(p)
-			self.canvas.update()
-			qp.end()
-			return True
-		return False
+		self.getPoints():
+		qp.setPen(QPen(Qt.white))	# erase old element
+		for p in self.object.old_point_arr:
+			qp.drawPoint(p)
+		qp.setPen(QPen(self.color))
+		for p in self.object.point_arr:
+			qp.drawPoint(p)
+		self.canvas.update()
+		qp.end()
 
 	def getPoints(self):
-		return self.object.getPoints()
+		self.object.getPoints()
 
 

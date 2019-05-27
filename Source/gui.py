@@ -314,7 +314,7 @@ class MainWindow(QMainWindow):
 			# TODO: judge if point valid
 			params = {}
 			win = PUWGetPolygonSettings(params, self)
-			if params:
+			if params and 'algorithm' in params.keys():
 				self.canvas.newPolygon(self.curColor, points=params['points'], algorithm=params['algorithm'])
 		else:
 			self.popUpMsgOneKey("Should create a canvas before drawing a polygon.")
@@ -334,7 +334,7 @@ class MainWindow(QMainWindow):
 			# TODO: judge if point valid
 			params = {}
 			win = PUWGetCurveSettings(params, self)
-			if params:
+			if params and 'algorithm' in params.keys():
 				self.canvas.newCurve(self.curColor, points=params['points'], algorithm=params['algorithm'])
 		else:
 			self.popUpMsgOneKey("Should create a canvas before drawing a curve.")

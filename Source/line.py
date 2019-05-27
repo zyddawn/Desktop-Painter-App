@@ -32,17 +32,12 @@ class Line(QLabel):
 			self.p1, self.p2 = self.point_arr[0], self.point_arr[-1]
 
 	def getPoints(self):
-		Res = True
-		if self.algorithm == 'DDA':
-			self.DDA()
-		elif self.algorithm == 'Midpoint':
+		if self.algorithm == 'Midpoint':
 			self.Midpoint()
 		elif self.algorithm == 'Bresenham':
 			self.Bresenham()
 		else:
-			print("Can't draw! Unknown algorithm.")
-			Res = False
-		return Res
+			self.DDA()
 
 	def DDA(self):
 		if len(self.point_arr)>0:

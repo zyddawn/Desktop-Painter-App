@@ -126,7 +126,7 @@ def LiangBarsky(lineElem, pLL, pUR):
 	deltax, deltay = x2 - x0, y2 - y0
 	Res = True
 	t_dict = {"t0":t0, "t1":t1}
-	print(t_dict)
+	# print(t_dict)
 	if not canSeeLine(-deltax, x0-xLL, t_dict): 
 		Res = False
 	if Res and not canSeeLine(deltax, xUR-x0, t_dict):
@@ -143,7 +143,7 @@ def LiangBarsky(lineElem, pLL, pUR):
 		t0, t1 = t_dict["t0"], t_dict["t1"]
 		x2, y2 = x0+t1*deltax, y0+t1*deltay
 		x0, y0 = x0+t0*deltax, y0+t0*deltay
-		print("from {} to {}".format((x0, y0), (x2, y2)))
+		# print("from {} to {}".format((x0, y0), (x2, y2)))
 		lineElem.object.setP1(QPoint(x0, y0))
 		lineElem.object.setP2(QPoint(x2, y2))
 		lineElem.updatePoints([]) 
@@ -165,7 +165,7 @@ def canSeeLine(q, d, t_dict):
 			t_dict["t1"] = r
 	elif d < 0:
 		return False
-	print(t_dict)
+	# print(t_dict)
 	return True
 
 

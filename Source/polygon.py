@@ -22,16 +22,11 @@ class Polygon(QLabel):
 		self.point_arr = newArr
 
 	def getPoints(self):
-		Res = True
-		if self.algorithm == 'DDA':
-			self.DDA()
-		elif self.algorithm == 'Bresenham':
+		if self.algorithm == 'Bresenham':
 			self.Bresenham()
 		else:
-			print("Can't draw! Unknown algorithm.")
-			Res = False
-		return Res
-
+			self.DDA()
+		
 	def DDA(self):
 		n = len(self.rawPoints)
 		for i in range(n):
