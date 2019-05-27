@@ -32,6 +32,8 @@ class Line(QLabel):
 			self.p1, self.p2 = self.point_arr[0], self.point_arr[-1]
 
 	def getPoints(self):
+		if len(self.point_arr)>0:
+			return ;
 		if self.algorithm == 'Midpoint':
 			self.Midpoint()
 		elif self.algorithm == 'Bresenham':
@@ -40,8 +42,6 @@ class Line(QLabel):
 			self.DDA()
 
 	def DDA(self):
-		if len(self.point_arr)>0:
-			return ;
 		x1, y1 = self.p1.x(), self.p1.y()
 		x2, y2 = self.p2.x(), self.p2.y()
 		dx, dy = x2-x1, y2-y1
@@ -58,8 +58,6 @@ class Line(QLabel):
 			y += dy
 
 	def Midpoint(self):
-		if len(self.point_arr)>0:
-			return ;
 		x1, y1 = self.p1.x(), self.p1.y()
 		x2, y2 = self.p2.x(), self.p2.y()
 		if x1==x2:	# when k is inf
@@ -121,8 +119,6 @@ class Line(QLabel):
 					self.point_arr.append(QPoint(x, y))
 		
 	def Bresenham(self):
-		if len(self.point_arr)>0:
-			return ;
 		x1, y1 = self.p1.x(), self.p1.y()
 		x2, y2 = self.p2.x(), self.p2.y()
 		if x1==x2:	# when k is inf

@@ -62,7 +62,7 @@ class Element(QLabel):
 		qp = QPainter(self.canvas.pixmap())
 		# qp.setPen(QPen(self.color))
 		# qp.setBrush(QBrush(self.color))
-		self.getPoints():
+		self.getPoints()
 		qp.setPen(QPen(Qt.white))	# erase old element
 		for p in self.object.old_point_arr:
 			qp.drawPoint(p)

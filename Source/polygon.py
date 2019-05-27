@@ -22,28 +22,28 @@ class Polygon(QLabel):
 		self.point_arr = newArr
 
 	def getPoints(self):
+		if len(self.point_arr)>0:
+			return ;
 		if self.algorithm == 'Bresenham':
 			self.Bresenham()
 		else:
 			self.DDA()
-		
+
 	def DDA(self):
 		n = len(self.rawPoints)
 		for i in range(n):
 			p1, p2 = self.rawPoints[i], self.rawPoints[(i+1)%n]
 			newLine = Line(QPoint(p1[0], p1[1]), QPoint(p2[0], p2[1]), algorithm='DDA')
-			Res = newLine.getPoints()
-			if Res:
-				self.point_arr.extend(newLine.point_arr)
+			newLine.getPoints()
+			self.point_arr.extend(newLine.point_arr)
 
 	def Bresenham(self):
 		n = len(self.rawPoints)
 		for i in range(n):
 			p1, p2 = self.rawPoints[i], self.rawPoints[(i+1)%n]
 			newLine = Line(QPoint(p1[0], p1[1]), QPoint(p2[0], p2[1]), algorithm='Bresenham')
-			Res = newLine.getPoints()
-			if Res:
-				self.point_arr.extend(newLine.point_arr)
+			newLine.getPoints()
+			self.point_arr.extend(newLine.point_arr)
 
 
 

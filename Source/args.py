@@ -34,14 +34,24 @@ def parseScript(path):
 			f = open(path, 'r')
 			rl = f.readlines()
 			op_arr = []
+			contin = False
 			for l in rl:
 				cmd = l.strip("\n\t").split(" ")
 				while '' in cmd:
 					cmd.remove('')
 				# print(cmd)
+				if cmd[0] == '#':
+					continue
+				if contin:
+					last_op = op_arr[-1]
+					last_op.params.extend(cmd)
+					contin = False
+					continue
 				if cmd:
 					new_op = OPs(cmd)
 					op_arr.append(new_op)
+					if new_op.action == 'drawPolygon' or new_op.action == 'drawCurve':
+						contin = True
 			return op_arr
 		except:
 			raise RuntimeError("Can't read file.")

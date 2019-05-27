@@ -1,9 +1,9 @@
 resetCanvas 100 100
 setColor 255 0 0
-drawLine 5 7 39 93 71 DDA
+drawLine 5 7 39 93 71 Naive
 saveCanvas output_1
 setColor 0 162 232
-drawLine 233 96 35 15 58 DDA
+drawLine 233 96 35 15 58 Naive
 saveCanvas output_2
 clip 5 33 10 70 58 Cohen-Sutherland
 saveCanvas output_3
@@ -11,7 +11,7 @@ rotate 5 33 49 -90
 saveCanvas output_4
 drawEllipse 123 31 49 8 18
 setColor 0 0 0
-drawPolygon 666 6 DDA
+drawPolygon 666 6 Naive
 44 22 73 30 74 77 59 56 32 63 25 49
 saveCanvas output_5
 rotate 666 59 56 90

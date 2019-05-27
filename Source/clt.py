@@ -20,12 +20,8 @@ class MainWindow(QMainWindow):
 
 	def initUI(self):
 		self.setUpWindow(0.8)
-		# self.setUpMenu()
-		# self.setUpStatusBar()
 		self.setUpCanvas()
-		# self.setUpToolBar()
-		# self.show()
-
+		
 	def setUpWindow(self, ratio=0.8):
 		ScreenRect = QDesktopWidget().availableGeometry()
 		[x, y, w, h] = [ScreenRect.x(), ScreenRect.y(), ScreenRect.width(), ScreenRect.height()]
@@ -36,148 +32,13 @@ class MainWindow(QMainWindow):
 		if 0<=R<=255 and 0<=G<=255 and 0<=B<=255:
 			self.curColor = QColor(R, G, B)
 
-
-	# def setUpMenu(self):
-	# 	menubar = self.menuBar()
-	# 	fileMenu = menubar.addMenu('File')
-	# 	editMenu = menubar.addMenu('Edit')
-	# 	viewMenu = menubar.addMenu('View')
-	# 	helpMenu = menubar.addMenu('Help')
-
-	# 	# Create new canvas
-	# 	newAct = QAction(QIcon(os.path.join(iconPath, 'icons8-add-new-64.png')), 'New/Refresh canvas', self)
-	# 	newAct.setShortcut('Ctrl+N')
-	# 	newAct.setStatusTip('Create new canvas / refresh canvas')
-	# 	newAct.triggered.connect(self.newCanvas)
-	# 	# Open file
-	# 	openAct = QAction(QIcon(os.path.join(iconPath, 'icons8-opened-folder-64.png')), 'Open...', self)
-	# 	openAct.setShortcut('Ctrl+O')
-	# 	openAct.setStatusTip('Open file...')
-	# 	openAct.triggered.connect(self.openFile)
-	# 	# Save file
-	# 	saveAct = QAction(QIcon(os.path.join(iconPath, 'icons8-save-64.png')), 'Save', self)
-	# 	saveAct.setShortcut('Ctrl+S')
-	# 	saveAct.setStatusTip('Save file')
-	# 	saveAct.triggered.connect(self.saveFile)
-	# 	# Save as file
-	# 	saveAsAct = QAction(QIcon(os.path.join(iconPath, 'icons8-save-as-64.png')), 'Save as...', self)
-	# 	saveAsAct.setShortcut('Shift+Ctrl+S')
-	# 	saveAsAct.setStatusTip('Save file as...')
-	# 	saveAsAct.triggered.connect(self.saveFileAs)
-	# 	### Add to fileMenu
-	# 	fileMenu.addAction(newAct)
-	# 	fileMenu.addSeparator()
-	# 	fileMenu.addAction(openAct)
-	# 	fileMenu.addAction(saveAct)
-	# 	fileMenu.addAction(saveAsAct)
-		
-	# 	# Cut
-	# 	cutAct = QAction('Cut', self)
-	# 	cutAct.setShortcut('Ctrl+X')
-	# 	cutAct.setStatusTip('Cut')
-	# 	# cutAct.triggered.connect()
-	# 	# Copy
-	# 	copyAct = QAction('Copy', self)
-	# 	copyAct.setShortcut('Ctrl+C')
-	# 	copyAct.setStatusTip('Copy')
-	# 	# copyAct.triggered.connect()
-	# 	# Paste
-	# 	pasteAct = QAction('Paste', self)
-	# 	pasteAct.setShortcut('Ctrl+V')
-	# 	pasteAct.setStatusTip('Paste')
-	# 	# pasteAct.triggered.connect()
-	# 	### Add to editMenu
-	# 	editMenu.addAction(cutAct)
-	# 	editMenu.addAction(copyAct)
-	# 	editMenu.addAction(pasteAct)
-		
-	# 	# Show toolbar
-	# 	toolBarAct = QAction('View tool bar', self, checkable=True)
-	# 	toolBarAct.setStatusTip('View tool bar')
-	# 	toolBarAct.setChecked(True)
-	# 	toolBarAct.triggered.connect(self.toggleToolBar)
-	# 	# Show statusbar
-	# 	statusBarAct = QAction('View status bar', self, checkable=True)
-	# 	statusBarAct.setStatusTip('View status bar')
-	# 	statusBarAct.setChecked(True)
-	# 	statusBarAct.triggered.connect(self.toggleStatusBar)
-
-	# 	##### set up tool bar
-	# 	self.toolbar = self.addToolBar("Operations")
-	# 	self.toolbar.addAction(newAct)
-	# 	self.toolbar.addAction(openAct)
-	# 	self.toolbar.addAction(saveAct)
-	# 	self.toolbar.addAction(saveAsAct)
-	# 	self.toolbar.addSeparator()
-		
-
-	# def setUpToolBar(self):
-	# 	# choose color 
-	# 	colorAct = QAction(QIcon(os.path.join(iconPath, 'icons8-color-palette-64.png')), 'Select color', self)
-	# 	colorAct.setStatusTip('Select color')
-	# 	colorAct.triggered.connect(self.selectColor)
-	# 	# new line
-	# 	newLineAct = QAction(QIcon(os.path.join(iconPath, 'icons8-line-64.png')), 'Create new line', self)
-	# 	newLineAct.setStatusTip('Create new line')
-	# 	newLineAct.setShortcut('Shift+Ctrl+L')
-	# 	newLineAct.triggered.connect(self.newLine)
-	# 	# new polygon
-	# 	newPolygonAct = QAction(QIcon(os.path.join(iconPath, 'icons8-polygon-64.png')), 'Create new polygon', self)
-	# 	newPolygonAct.setStatusTip('Create new polygon')
-	# 	newPolygonAct.setShortcut('Shift+Ctrl+P')
-	# 	newPolygonAct.triggered.connect(self.newPolygon)
-	# 	# new ellipse
-	# 	newEllipseAct = QAction(QIcon(os.path.join(iconPath, 'icons8-sphere-64.png')), 'Create new ellipse', self)
-	# 	newEllipseAct.setStatusTip('Create new ellipse')
-	# 	newEllipseAct.setShortcut('Shift+Ctrl+O')
-	# 	newEllipseAct.triggered.connect(self.newEllipse)
-	# 	# new curve
-	# 	newCurveAct = QAction(QIcon(os.path.join(iconPath, 'icons8-graph-report-64.png')), 'Create new curve', self)
-	# 	newCurveAct.setStatusTip('Create new curve')
-	# 	newCurveAct.setShortcut('Shift+Ctrl+C')
-	# 	newCurveAct.triggered.connect(self.newCurve)
-
-	# 	translateAct = QAction(QIcon(os.path.join(iconPath, 'icons8-left-64.png')), 'Translate', self)
-	# 	translateAct.setStatusTip('Translate')
-	# 	translateAct.triggered.connect(self.translate)
-
-	# 	rotateAct = QAction(QIcon(os.path.join(iconPath, 'icons8-rotate-right-64.png')), 'Rotate', self)
-	# 	rotateAct.setStatusTip('Rotate')
-	# 	rotateAct.triggered.connect(self.rotate)
-
-	# 	scaleAct = QAction(QIcon(os.path.join(iconPath, 'icons8-drag-64.png')), 'Scale', self)
-	# 	scaleAct.setStatusTip('Scale')
-	# 	scaleAct.triggered.connect(self.scale)
-
-	# 	clipLineAct = QAction(QIcon(os.path.join(iconPath, 'icons8-scissors-64.png')), 'Clip line', self)
-	# 	clipLineAct.setStatusTip('Clip line')
-	# 	clipLineAct.triggered.connect(self.lineClip)
-
-	# 	self.toolbar.addAction(newLineAct)
-	# 	self.toolbar.addAction(newPolygonAct)
-	# 	self.toolbar.addAction(newEllipseAct)
-	# 	self.toolbar.addAction(newCurveAct)
-	# 	self.toolbar.addSeparator()
-	# 	self.toolbar.addAction(translateAct)
-	# 	self.toolbar.addAction(rotateAct)
-	# 	self.toolbar.addAction(scaleAct)
-	# 	self.toolbar.addAction(clipLineAct)
-	# 	self.toolbar.addSeparator()
-	# 	self.toolbar.addAction(colorAct)
-
-	# def setUpStatusBar(self):
-	# 	self.statusbar = self.statusBar()
-	# 	self.statusbar.showMessage('Ready')
-
 	def setUpCanvas(self):
 		self.canvas = Canvas()
 		self.setCentralWidget(self.canvas)
-		# self.setMouseTracking(True)
 		self.newCanvas(0, 0)	# default size
 
 	def resetCanvasSize(self, w, h):
 		if not (isinstance(w,int) and isinstance(h,int) and 100<=w<=1000 and 100<=h<=1000):
-			# print("Set default canvas size.")
 			w = self.canvas.width()-self.canvasOffset*2
 			h = self.canvas.height()-self.canvasOffset*2
 		self.canvas.setCanvasSize(w, h)
@@ -185,7 +46,6 @@ class MainWindow(QMainWindow):
 	def newCanvas(self, w, h):
 		self.resetCanvasSize(w, h)
 		self.canvas.newCanvas()
-		# self.path = None
 
 	def setPath(self, path):
 		self.path = path
@@ -298,8 +158,6 @@ class MainWindow(QMainWindow):
 def execCommands(op_arr, path=None):
 	app = QApplication(sys.argv)
 	ex = MainWindow()
-	# sys.exit(app.exec_())
-	# print("hello")
 	if path:
 		ex.setPath(path)
 	else:
@@ -374,4 +232,6 @@ if __name__=='__main__':
 			execCommands(op_arr, args.path)
 		else:
 			execCommands(op_arr)
+		# for i, x in enumerate(op_arr):
+		# 	print("{0}: {1} {2}".format(i, x.action, x.params))
 
