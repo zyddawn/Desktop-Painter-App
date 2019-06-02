@@ -44,7 +44,7 @@ class Element(QLabel):
 			elif self.type=='Ellipse':
 				self.object = Ellipse(self.kwargs['rCenter'], self.kwargs['rx'], self.kwargs['ry'], self.kwargs['algorithm'])
 			elif self.type=='Curve':
-				self.object = Curve()
+				self.object = Curve(self.kwargs['points'], self.kwargs['algorithm'])
 			else:
 				raise RuntimeError('Invalid element type: {}'.format(self.type))
 			self.paintEvent()

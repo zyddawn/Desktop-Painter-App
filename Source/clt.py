@@ -198,7 +198,6 @@ def execCommands(op_arr, path=None):
 			for i in range(n):
 				points.append((int(op.params[3+2*i]), int(op.params[4+2*i])))
 			ex.newCurve(Id, points, algorithm)
-			print("    drawCurve not implemented yet.")
 			# print("    drawCurve {0} {1} {2} {3}".format(Id, n, algorithm, points))
 		elif op.action == 'translate':
 			Id, dx, dy = int(op.params[0]), int(op.params[1]), int(op.params[2])
