@@ -26,13 +26,26 @@ class Curve(QLabel):
 		self.point_arr = newArr
 
 	def getPoints(self):
+		xs, ys = [p[0] for p in self.rawPoints], [p[1] for p in self.rawPoints]
+		npoints = 4*(max(xs)-min(xs)+max(ys)-min(ys))	# default value	
 		if self.algorithm == 'Bezier':
-			xs, ys = [p[0] for p in self.rawPoints], [p[1] for p in self.rawPoints]
-			npoints = 4*(max(xs)-min(xs)+max(ys)-min(ys))	# default value
 			self.Bezier(npoints=npoints)
 		else:
-			 # self.algorithm == 'B-spline':
-			self.BSpline()
+			# self.algorithm == 'B-spline':
+			# len(knot) = k + len(self.rawPoints)
+			k = 3
+			n = len(self.rawPoints)-1
+			# if len(self.rawPoints) < k:
+			# 	print("Should have no less than {} points for drawing B-Spline of order {}.".format(k, k))
+			knot = []
+			for j in range(n+k+1):
+				if 0<=j<=k-1:
+					knot.append(0)
+				elif k<=j<=n:
+					knot.append(j-k+1)
+				elif n+1<=j<=n+k:
+					knot.append(n-k+2)
+			self.BSpline(knot, n, k=3, npoints=npoints)
 
 	def Bezier(self, npoints=500):
 		if len(self.rawPoints)!=4:
@@ -52,7 +65,7 @@ class Curve(QLabel):
 		# print("\t splitBezier")
 		R, Q = points[:], points[:]
 		epsilon = 0.01
-		if (maxDist(points)<epsilon):
+		if maxDist(points) < epsilon:
 			newLine = Line(QPoint(points[0][0], points[0][1]), QPoint(points[3][0], points[3][1]), algorithm='Bresenham')
 			newLine.getPoints()
 			self.point_arr.extend(newLine.point_arr)
@@ -68,9 +81,15 @@ class Curve(QLabel):
 			self.splitBezier(R)
 
 
-	def BSpline(self):
-		print("BSpline not implemented yet.")
-		pass
+	def BSpline(self, knot, n, k=3, npoints=500):
+		delta = (knot[n+1] - knot[k-1]) / npoints
+		ith, u = k-1, knot[k-1]
+		for j in range(npoints+1):
+			while ith<n and u>knot[ith+1]:
+				ith += 1
+			p = deBoor(self.rawPoints, ith, k, knot, u)
+			self.point_arr.append(QPoint(p[0], p[1]))
+			u += delta
 
 
 def deCasteljau(points, t):
@@ -90,5 +109,30 @@ def maxDist(points):
 	dist = np.sqrt((points[0][0]-points[3][0])**2 + (points[0][1]-points[3][1])**2)
 	h1, h2 = np.abs(s1/dist), np.abs(s2/dist)
 	return max(h1, h2)
+
+def deBoor(points, ith, k, knot, u):
+	denom = alpha = 0.0
+	p = points[:k]
+	epsilon = 0.005
+	for j in range(k):
+		p[j] = points[ith-k+1+j]
+	for r in range(1, k):
+		for m in range(r, k)[::-1]:
+			j = m+ith-k+1
+			denom = knot[j+k-r]-knot[j]
+			if np.abs(denom) < epsilon:
+				alpha = 0.0
+			else:
+				alpha = (u - knot[j]) / denom
+			x = (1-alpha)*p[m-1][0] + alpha*p[m][0]
+			y = (1-alpha)*p[m-1][1] + alpha*p[m][1]
+			p[m] = (x, y)
+	return p[k-1]
+
+
+
+
+
+
 
 
