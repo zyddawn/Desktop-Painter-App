@@ -363,7 +363,7 @@ class PUWGetCurveSettings(QDialog):
 		self.nEdit.setFixedWidth(30)
 		self.xEdit.setText(str(random.randint(200, 900)))
 		self.yEdit.setText(str(random.randint(200, 450)))
-		self.nEdit.setText("5")
+		self.nEdit.setText("4")
 		self.algorithmChoice = QComboBox(self)
 		self.algorithmChoice.addItem("Bezier")
 		self.algorithmChoice.addItem("B-spline")
