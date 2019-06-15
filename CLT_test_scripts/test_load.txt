@@ -1,4 +1,0 @@
-loadCanvas ./res/test_new_line.bmp ./res/
-setColor 55 198 192
-drawEllipse 0 200 200 40 25
-saveCanvas test_load
