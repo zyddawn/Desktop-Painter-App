@@ -12,7 +12,6 @@ def translate(elem, Tx, Ty):
 		point_arr.append(QPoint(x,y))
 	elem.updatePoints(point_arr)
 
-
 def rotate(elem, cx, cy, angle):
 	TM1 = np.matrix([[1,0,0],[0,1,0],[-cx,-cy,1]])
 	TM2 = np.matrix([[1,0,0],[0,1,0],[cx,cy,1]])
@@ -25,7 +24,6 @@ def rotate(elem, cx, cy, angle):
 		x,y,_ = np.array(a*TM1*RM*TM2)[0]
 		point_arr.append(QPoint(x,y))
 	elem.updatePoints(point_arr)
-
 
 def scale(elem, cx, cy, portion):
 	TM1 = np.matrix([[1,0,0],[0,1,0],[-cx,-cy,1]])

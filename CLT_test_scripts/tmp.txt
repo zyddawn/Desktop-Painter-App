@@ -1,0 +1,5 @@
+resetCanvas 150 150   # set size
+setColor 255 0 0
+drawLine 0 20 20 130 130 DDA
+#clip 0 50 40 100 100 Cohen-Sutherland
+saveCanvas nocutline
